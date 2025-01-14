@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "642256897038",
+    "project_id": "local-rental-app---flutter",
+    "storage_bucket": "local-rental-app---flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642256897038:android:8b1a4105f612c91f28685f",
+        "android_client_info": {
+          "package_name": "com.example.fitness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzWwSwitR90pkpQpLfkl1OCq-vXJVcPLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642256897038:android:19b74da3aa70732b28685f",
+        "android_client_info": {
+          "package_name": "com.example.localrental_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzWwSwitR90pkpQpLfkl1OCq-vXJVcPLY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
