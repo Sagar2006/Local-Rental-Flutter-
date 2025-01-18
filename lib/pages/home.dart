@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
-import 'package:localrental_flutter/models/category_model.dart';
+// import 'package:localrental_flutter/models/category_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
               return Container(
                 width: 200,
                 decoration: BoxDecoration(
-                  color: _items[index].boxColor.withOpacity(0.3),
+                  color: _items[index].boxColor.withValues(alpha: 77),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       height: 100,
                       width: 100,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
@@ -202,8 +202,8 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            _items[index].boxColor,
-                            _items[index].boxColor.withOpacity(0.7),
+                            _items[index].boxColor.withValues(alpha: 77),
+                            _items[index].boxColor.withValues(alpha: 77),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(50),
@@ -237,7 +237,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff1D1617).withOpacity(0.11),
+            color: const Color(0xff1D1617).withValues(alpha: 0.11),
             blurRadius: 40,
             spreadRadius: 0.0,
           )
@@ -286,7 +286,7 @@ class _HomePageState extends State<HomePage> {
               return Container(
                 width: 100,
                 decoration: BoxDecoration(
-                  color: categories[index].color.withOpacity(0.3),
+                  color: categories[index].color.withValues(alpha: 77),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -322,22 +322,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  IconData _getCategoryIcon(String category) {
-    switch (category) {
-      case 'Electronics':
-        return Icons.devices;
-      case 'Beauty':
-        return Icons.face;
-      case 'Cooking':
-        return Icons.restaurant;
-      case 'Fitness':
-        return Icons.fitness_center;
-      case 'Travel':
-        return Icons.flight;
-      default:
-        return Icons.category;
-    }
-  }
+  // IconData _getCategoryIcon(String category) {
+  //   switch (category) {
+  //     case 'Electronics':
+  //       return Icons.devices;
+  //     case 'Beauty':
+  //       return Icons.face;
+  //     case 'Cooking':
+  //       return Icons.restaurant;
+  //     case 'Fitness':
+  //       return Icons.fitness_center;
+  //     case 'Travel':
+  //       return Icons.flight;
+  //     default:
+  //       return Icons.category;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
