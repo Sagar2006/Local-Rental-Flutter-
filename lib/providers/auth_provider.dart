@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitness/services/auth_service.dart';
+import 'package:localrental_flutter/services/auth_service.dart';
 
 class FitnessAuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
