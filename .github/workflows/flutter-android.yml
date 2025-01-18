@@ -1,38 +1,41 @@
-name: Build and Deploy Flutter Android App
+name: Build and Deploy Flutter App
 
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push to the main branch
+      - main # Or your default branch
+  pull_request:
+    branches:
+      - main # Or your default branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Step 2: Set up Flutter environment
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "stable"
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.7.0' # Make sure this is the version you're using
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: flutter pub get
+    - name: Install dependencies
+      run: flutter pub get
 
-      # Step 4: Build APK
-      - name: Build APK
-        run: flutter build apk --release
+    - name: Build APK
+      run: flutter build apk --release
 
-      # Step 5: Upload APK to Firebase App Distribution
-      - name: Deploy to Firebase
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: 1:642256897038:android:19b74da3aa70732b28685f
-          token: ${{ secrets.FIREBASE_AUTH_TOKEN }}
-          groups: testers
-          file: build/app/outputs/flutter-apk/app-release.apk
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: flutter-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+    - name: Firebase Deployment
+      run: |
+        firebase use --add
+        firebase deploy --only hosting # Add hosting if you're deploying web too
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Set Firebase token in GitHub secrets
