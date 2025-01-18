@@ -28,14 +28,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lib32stdc++6 libglu1-mesa
 
-      # Step 4: Install dependencies
+      # Step 4: Clean Flutter cache (to resolve any corrupted files)
+      - name: Clean Flutter cache
+        run: flutter clean
+
+      # Step 5: Install dependencies
       - name: Install dependencies
         run: flutter pub get --verbose
 
-      # Step 5: Analyze Dart code
+      # Step 6: Analyze Dart code
       - name: Analyze project source
         run: flutter analyze
 
-      # Step 6: Run tests
+      # Step 7: Run tests
       - name: Run tests
         run: flutter test
