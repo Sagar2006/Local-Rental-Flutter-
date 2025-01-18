@@ -6,10 +6,10 @@ class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  _SignupPageState createState() => _SignupPageState();
+  SignupPageState createState() => SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -22,7 +22,7 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> _signup() async {
     if (_formKey.currentState!.validate() && _agreedToTerms) {
       final authProvider =
-          Provider.of<FitnessAuthProvider>(context, listen: false);
+      Provider.of<FitnessAuthProvider>(context, listen: false);
 
       final success = await authProvider.signUp(
         _emailController.text.trim(),
@@ -158,7 +158,7 @@ class _SignupPageState extends State<SignupPage> {
                           onPressed: () {
                             setState(() {
                               _obscureConfirmPassword =
-                                  !_obscureConfirmPassword;
+                              !_obscureConfirmPassword;
                             });
                           },
                         ),

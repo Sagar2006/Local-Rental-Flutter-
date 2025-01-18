@@ -7,10 +7,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       final authProvider =
-          Provider.of<FitnessAuthProvider>(context, listen: false);
+      Provider.of<FitnessAuthProvider>(context, listen: false);
 
       final success = await authProvider.signIn(
         _emailController.text.trim(),
