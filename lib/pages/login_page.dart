@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness/providers/auth_provider.dart';
-import 'package:fitness/pages/signup_page.dart';
+import 'package:localrental_flutter/providers/auth_provider.dart';
+import 'package:localrental_flutter/pages/signup_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -19,8 +19,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      final authProvider = Provider.of<FitnessAuthProvider>(context, listen: false);
-      
+      final authProvider =
+          Provider.of<FitnessAuthProvider>(context, listen: false);
+
       final success = await authProvider.signIn(
         _emailController.text.trim(),
         _passwordController.text.trim(),
@@ -89,7 +90,9 @@ class _LoginPageState extends State<LoginPage> {
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {

@@ -62,6 +62,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '642256897038',
     projectId: 'local-rental-app---flutter',
     storageBucket: 'local-rental-app---flutter.firebasestorage.app',
+    databaseURL:
+        'https://local-rental-app---flutter-default-rtdb.firebaseio.com/',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

@@ -1,15 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitness/providers/auth_provider.dart';
-import 'package:fitness/widgets/auth_wrapper.dart';
+import 'package:localrental_flutter/providers/auth_provider.dart';
+import 'package:localrental_flutter/widgets/auth_wrapper.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    if (e.toString().contains('duplicate-app')) {
+      // Firebase already initialized, continue
+    } else {
+      rethrow;
+    }
+  }
   runApp(const MyApp());
 }
 
