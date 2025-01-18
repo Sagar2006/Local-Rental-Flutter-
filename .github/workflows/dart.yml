@@ -1,4 +1,4 @@
-name: Dart CI Workflow
+name: Flutter CI Workflow
 
 on:
   push:
@@ -11,18 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
+      # Step 1: Check out repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Dart
-      # Note: Pin the Dart setup action to a tagged version for stability.
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
+      # Step 2: Set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter: true  # Ensures the Flutter SDK is set up
+          flutter-version: stable  # Installs the latest stable version of Flutter
 
-      # Step 3: Install Android SDK dependencies (required for Flutter projects)
+      # Step 3: Install Android SDK dependencies
+      - name: Install Android SDK dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lib32stdc++6 libglu1-mesa
 
       # Step 4: Install dependencies
       - name: Install dependencies
@@ -30,8 +33,8 @@ jobs:
 
       # Step 5: Analyze Dart code
       - name: Analyze project source
-        run: dart analyze
+        run: flutter analyze
 
-      # Step 6: Run tests (use `flutter test` for Flutter projects)
+      # Step 6: Run tests
       - name: Run tests
         run: flutter test
