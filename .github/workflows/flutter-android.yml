@@ -3,10 +3,10 @@ name: Build and Deploy Flutter App
 on:
   push:
     branches:
-      - master  # Change this from 'main' to 'master'
+      - master  # Trigger on the master branch
   pull_request:
     branches:
-      - master  # Change this from 'main' to 'master'
+      - master  # Trigger on PR to the master branch
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.19.0' # Make sure this is the version you're using
+        flutter-version: '3.27.2'  # Update Flutter version to 3.27.2
 
     - name: Install dependencies
       run: flutter pub get
