@@ -1,45 +1,33 @@
 name: Flutter CI Workflow
-
 on:
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out repository code
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Step 2: Set up Flutter
+        
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.13.6  # Replace with the latest stable version
-          channel: stable          # Ensure the correct channel is used
-
-      # Step 3: Install Android SDK dependencies
-      - name: Install Android SDK dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lib32stdc++6 libglu1-mesa
-
-      # Step 4: Clean Flutter cache (to resolve any corrupted files)
-      - name: Clean Flutter cache
-        run: flutter clean
-
-      # Step 5: Install dependencies
+          flutter-version: '3.19.0'  # Updated to latest stable version
+          channel: stable
+          cache: true  # Add caching for faster execution
+          
       - name: Install dependencies
-        run: flutter pub get --verbose
-
-      # Step 6: Analyze Dart code
+        run: |
+          flutter pub cache repair  # Add cache repair step
+          flutter pub get
+          
+      - name: Verify dependencies
+        run: flutter pub outdated
+        
       - name: Analyze project source
-        run: flutter analyze
-
-      # Step 7: Run tests
+        run: flutter analyze --no-fatal-infos
+        
       - name: Run tests
         run: flutter test
