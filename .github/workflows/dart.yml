@@ -14,18 +14,12 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.0'  # Use the latest stable version
+          flutter-version: '3.27.2'  # Updated to the suggested version
           channel: stable
           cache: true
           
-      - name: Install Android SDK dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lib32stdc++6 libglu1-mesa
-          
       - name: Install dependencies
-        run: |
-          flutter pub get
+        run: flutter pub get
           
       - name: Analyze project source
         run: flutter analyze
