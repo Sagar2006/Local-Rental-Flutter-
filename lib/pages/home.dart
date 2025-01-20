@@ -1,6 +1,8 @@
+//home.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
+import 'package:localrental_flutter/pages/item_detail_page.dart'; // Import for navigation
 // import 'package:localrental_flutter/models/category_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -143,85 +145,97 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(left: 20, right: 20),
             separatorBuilder: (context, index) => const SizedBox(width: 25),
             itemBuilder: (context, index) {
-              return Container(
-                width: 200,
-                decoration: BoxDecoration(
-                  color: _items[index].boxColor.withValues(alpha: 77),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      height: 100,
-                      width: 100,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.inventory,
-                        size: 50,
-                        color: Colors.black54,
-                      ),
+              return GestureDetector(
+                onTap: () {
+                  // Navigate to ItemDetailPage and pass the item data
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ItemDetailPage(item: _items[index]),
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          _items[index].name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                            fontSize: 16,
-                          ),
+                  );
+                },
+                child: Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: _items[index].boxColor.withValues(alpha: 77),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
                         ),
-                        Text(
-                          _items[index].description,
-                          style: const TextStyle(
-                            color: Color(0xff7B6F72),
-                            fontSize: 12,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '\$${_items[index].price} ${_items[index].priceType == 'per_day' ? '/day' : '/hour'}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      height: 45,
-                      width: 130,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            _items[index].boxColor.withValues(alpha: 77),
-                            _items[index].boxColor.withValues(alpha: 77),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Center(
-                        child: Text(
-                          _items[index].tags.isNotEmpty
-                              ? _items[index].tags[0]
-                              : 'View',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
+                        child: const Icon(
+                          Icons.inventory,
+                          size: 50,
+                          color: Colors.black54,
                         ),
                       ),
-                    ),
-                  ],
+                      Column(
+                        children: [
+                          Text(
+                            _items[index].name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            _items[index].description,
+                            style: const TextStyle(
+                              color: Color(0xff7B6F72),
+                              fontSize: 12,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '\$${_items[index].price} ${_items[index].priceType == 'per_day' ? '/day' : '/hour'}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 45,
+                        width: 130,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              _items[index].boxColor.withValues(alpha: 77),
+                              _items[index].boxColor.withValues(alpha: 77),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _items[index].tags.isNotEmpty
+                                ? _items[index].tags[0]
+                                : 'View',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

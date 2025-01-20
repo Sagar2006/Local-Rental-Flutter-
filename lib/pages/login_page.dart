@@ -54,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Start your day with delicious breakfasts.',
+                'Unlock convenience with rentals at your fingertips.',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
