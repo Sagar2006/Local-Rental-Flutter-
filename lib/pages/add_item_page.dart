@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:localrental_flutter/models/item_model.dart';
-<<<<<<< HEAD
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../services/imgur_service.dart';
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
@@ -24,14 +21,11 @@ class _AddItemPageState extends State<AddItemPage> {
   String _selectedPriceType = 'per_day';
   final List<String> _selectedTags = [];
   bool _isLoading = false;
-<<<<<<< HEAD
   final _quantityController = TextEditingController();
   final List<File> _selectedMedia = [];
   final List<bool> _isVideo = [];
   final ImagePicker _picker = ImagePicker();
   bool _uploadingMedia = false;
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 
   // Predefined tags
   final List<String> _availableTags = [
@@ -45,7 +39,6 @@ class _AddItemPageState extends State<AddItemPage> {
     'Entertainment',
   ];
 
-<<<<<<< HEAD
   Future<void> _pickMedia(ImageSource source, bool isVideo) async {
     final XFile? file = isVideo
         ? await _picker.pickVideo(source: source)
@@ -87,25 +80,18 @@ class _AddItemPageState extends State<AddItemPage> {
     });
   }
 
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
   Future<void> _submitItem() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedTags.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-<<<<<<< HEAD
         const SnackBar(
           content: Text('Please select at least one tag'),
           backgroundColor: Colors.red,
         ),
-=======
-        const SnackBar(content: Text('Please select at least one tag')),
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       );
       return;
     }
 
-<<<<<<< HEAD
     try {
       setState(() {
         _isLoading = true;
@@ -114,11 +100,6 @@ class _AddItemPageState extends State<AddItemPage> {
 
       final mediaUrls = await _uploadMedia();
 
-=======
-    setState(() => _isLoading = true);
-
-    try {
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
@@ -133,17 +114,13 @@ class _AddItemPageState extends State<AddItemPage> {
         priceType: _selectedPriceType,
         tags: _selectedTags,
         userId: user.uid,
-<<<<<<< HEAD
         quantity: int.parse(_quantityController.text),
         mediaUrls: mediaUrls,
         isVideo: _isVideo,
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       );
 
       await newItemRef.set(item.toJson());
 
-<<<<<<< HEAD
       if (!mounted) return;
 
       // Clear loading states
@@ -185,30 +162,11 @@ class _AddItemPageState extends State<AddItemPage> {
           duration: const Duration(seconds: 3),
         ),
       );
-=======
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item added successfully')),
-        );
-        _formKey.currentState!.reset();
-        _selectedTags.clear();
-        setState(() {});
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     }
   }
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     return PopScope(
       canPop: true,
       onPopInvoked: (_) {
@@ -341,87 +299,11 @@ class _AddItemPageState extends State<AddItemPage> {
                           return 'Please enter quantity';
                         }
                         if (int.tryParse(value) == null) {
-=======
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Item'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Name Field
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Item Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  prefixIcon: const Icon(Icons.inventory),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter item name';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Description Field
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  prefixIcon: const Icon(Icons.description),
-                ),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter item description';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Price Field with Type Dropdown
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      controller: _priceController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Price',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.attach_money),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter price';
-                        }
-                        if (double.tryParse(value) == null) {
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
                           return 'Please enter a valid number';
                         }
                         return null;
                       },
                     ),
-<<<<<<< HEAD
                     const SizedBox(height: 16),
 
                     // Tags Section
@@ -578,88 +460,6 @@ class _AddItemPageState extends State<AddItemPage> {
               ),
               // Add permanent bottom padding
               SizedBox(height: MediaQuery.of(context).padding.bottom + 80), // 80dp for navigation bar + extra padding
-=======
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedPriceType,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'per_hour',
-                          child: Text('Per Hour'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'per_day',
-                          child: Text('Per Day'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedPriceType = value);
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Tags Section
-              const Text(
-                'Select Tags',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: _availableTags.map((tag) {
-                  final isSelected = _selectedTags.contains(tag);
-                  return FilterChip(
-                    label: Text(tag),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _selectedTags.add(tag);
-                        } else {
-                          _selectedTags.remove(tag);
-                        }
-                      });
-                    },
-                    selectedColor: const Color(0xff92A3FD),
-                    checkmarkColor: Colors.white,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-
-              // Submit Button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitItem,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff92A3FD),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Add Item',
-                        style: TextStyle(fontSize: 16),
-                      ),
-              ),
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
             ],
           ),
         ),
@@ -672,10 +472,7 @@ class _AddItemPageState extends State<AddItemPage> {
     _nameController.dispose();
     _descriptionController.dispose();
     _priceController.dispose();
-<<<<<<< HEAD
     _quantityController.dispose();
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     super.dispose();
   }
 }
