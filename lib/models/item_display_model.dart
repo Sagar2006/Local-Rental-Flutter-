@@ -9,12 +9,9 @@ class ItemDisplayModel {
   final List<String> tags;
   final String userId;
   final Color boxColor;
-<<<<<<< HEAD
   final int quantity;
   final List<String> mediaUrls;
   final List<bool> isVideo;
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
   bool viewIsSelected;
 
   ItemDisplayModel({
@@ -26,12 +23,9 @@ class ItemDisplayModel {
     required this.tags,
     required this.userId,
     required this.boxColor,
-<<<<<<< HEAD
     required this.quantity,
     required this.mediaUrls,
     required this.isVideo,
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     this.viewIsSelected = false,
   });
 
@@ -46,12 +40,9 @@ class ItemDisplayModel {
       tags: List<String>.from(json['tags'] ?? []),
       userId: json['userId'] ?? '',
       boxColor: boxColor ?? const Color(0xff9DCEFF),
-<<<<<<< HEAD
       quantity: json['quantity'] ?? 0,
       mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
       isVideo: List<bool>.from(json['isVideo'] ?? []),
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       viewIsSelected: false,
     );
   }
