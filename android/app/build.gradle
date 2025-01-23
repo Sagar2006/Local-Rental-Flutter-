@@ -14,21 +14,12 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-<<<<<<< HEAD
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         jvmTarget = '17'
-=======
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     }
 
     defaultConfig {
@@ -36,12 +27,7 @@ android {
         applicationId = "com.example.localrental_flutter"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-<<<<<<< HEAD
         minSdkVersion = 23
-=======
-        minSdk = flutter.minSdkVersion
-        minSdkVersion 23
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
