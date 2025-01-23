@@ -6,12 +6,9 @@ class ItemModel {
   final String priceType; // "per_hour" or "per_day"
   final List<String> tags;
   final String userId;
-<<<<<<< HEAD
   final int quantity;
   final List<String> mediaUrls; // For both images and videos
   final List<bool> isVideo; // Indicates if each mediaUrl is a video
-=======
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 
   ItemModel({
     required this.id,
@@ -21,7 +18,6 @@ class ItemModel {
     required this.priceType,
     required this.tags,
     required this.userId,
-<<<<<<< HEAD
     required this.quantity,
     required this.mediaUrls,
     required this.isVideo,
@@ -52,31 +48,4 @@ class ItemModel {
         mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
         isVideo: List<bool>.from(json['isVideo'] ?? []),
       );
-=======
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'price': price,
-      'priceType': priceType,
-      'tags': tags,
-      'userId': userId,
-    };
-  }
-
-  factory ItemModel.fromJson(Map<String, dynamic> json) {
-    return ItemModel(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      price: json['price'].toDouble(),
-      priceType: json['priceType'],
-      tags: List<String>.from(json['tags']),
-      userId: json['userId'],
-    );
-  }
->>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 }
