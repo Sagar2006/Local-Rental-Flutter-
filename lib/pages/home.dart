@@ -5,11 +5,15 @@ import 'package:localrental_flutter/models/item_display_model.dart';
 import 'package:localrental_flutter/pages/item_detail_page.dart'; // Import for navigation
 // import 'package:localrental_flutter/models/category_model.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+<<<<<<< HEAD
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:localrental_flutter/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:localrental_flutter/pages/add_item_page.dart';
 // import 'package:localrental_flutter/pages/cart_page.dart';
+=======
+import 'package:firebase_auth/firebase_auth.dart';
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -261,6 +265,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+<<<<<<< HEAD
       child: Material(
         color: Colors.transparent,
         child: TextField(
@@ -274,6 +279,18 @@ class _HomePageState extends State<HomePage> {
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide.none,
             ),
+=======
+      child: TextField(
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.all(15),
+          hintText: 'Search items',
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide.none,
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
           ),
         ),
       ),
@@ -362,6 +379,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return Scaffold(
       body: Column(
         children: [
@@ -437,6 +455,43 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+=======
+    return Column(
+      children: [
+        AppBar(
+          title: const Text('Local Rental'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'signout') {
+                  FirebaseAuth.instance.signOut();
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem<String>(
+                  value: 'signout',
+                  child: Text('Sign Out'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              _searchField(),
+              const SizedBox(height: 40),
+              _categoriesSection(),
+              const SizedBox(height: 40),
+              _dietSection(),
+            ],
+          ),
+        ),
+      ],
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     );
   }
 }

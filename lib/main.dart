@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:localrental_flutter/pages/add_item_page.dart';
 import 'package:localrental_flutter/pages/cart_page.dart';
 import 'package:localrental_flutter/pages/home.dart';
@@ -8,6 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:localrental_flutter/providers/auth_provider.dart';
 import 'package:localrental_flutter/widgets/auth_wrapper.dart';
 // import 'package:localrental_flutter/widgets/main_navigation.dart';
+=======
+import 'package:provider/provider.dart';
+import 'package:localrental_flutter/providers/auth_provider.dart';
+import 'package:localrental_flutter/widgets/auth_wrapper.dart';
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 import 'firebase_options.dart';
 
 void main() async {
@@ -39,12 +45,15 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(fontFamily: 'Poppins'),
         home: const AuthWrapper(),
+<<<<<<< HEAD
         routes: {
           '/home': (context) => const HomePage(),
           '/add-item': (context) => const AddItemPage(),
           '/cart': (context) => const CartPage(),
           '/login': (context) => const LoginPage(),
         },
+=======
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       ),
     );
   }

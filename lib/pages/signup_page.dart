@@ -18,6 +18,7 @@ class SignupPageState extends State<SignupPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreedToTerms = false;
+<<<<<<< HEAD
   bool _isLoading = false;
 
   Future<void> _handleSignUp() async {
@@ -49,6 +50,29 @@ class SignupPageState extends State<SignupPage> {
           });
         }
       }
+=======
+
+  Future<void> _signup() async {
+    if (_formKey.currentState!.validate() && _agreedToTerms) {
+      final authProvider =
+      Provider.of<FitnessAuthProvider>(context, listen: false);
+
+      final success = await authProvider.signUp(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authProvider.error ?? 'An error occurred')),
+        );
+      }
+    } else if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please agree to the Terms and Conditions')),
+      );
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     }
   }
 
@@ -210,7 +234,11 @@ class SignupPageState extends State<SignupPage> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
+<<<<<<< HEAD
                         onPressed: _handleSignUp,
+=======
+                        onPressed: _signup,
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff92A3FD),
                           shape: RoundedRectangleBorder(

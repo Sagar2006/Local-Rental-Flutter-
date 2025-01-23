@@ -24,11 +24,16 @@ class FitnessAuthProvider extends ChangeNotifier {
     }
   }
 
+<<<<<<< HEAD
   Future<bool> signUp(String email, String password, BuildContext context) async {
+=======
+  Future<bool> signUp(String email, String password) async {
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
     setLoading(true);
     try {
       await _authService.createUserWithEmailAndPassword(email, password);
       error = null;
+<<<<<<< HEAD
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -38,6 +43,8 @@ class FitnessAuthProvider extends ChangeNotifier {
           ),
         );
       }
+=======
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
       return true;
     } catch (e) {
       error = e.toString();

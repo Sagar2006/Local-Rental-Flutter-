@@ -1,16 +1,22 @@
 // item_detail_page.dart
 import 'package:flutter/material.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
+<<<<<<< HEAD
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ItemDetailPage extends StatefulWidget {
+=======
+
+class ItemDetailPage extends StatelessWidget {
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
   final ItemDisplayModel item;
 
   const ItemDetailPage({super.key, required this.item});
 
   @override
+<<<<<<< HEAD
   State<ItemDetailPage> createState() => _ItemDetailPageState();
 }
 
@@ -84,6 +90,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   }
 
   @override
+=======
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +105,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+<<<<<<< HEAD
             if (widget.item.mediaUrls.isNotEmpty)
               FlutterCarousel(
                 options: CarouselOptions(
@@ -123,6 +132,26 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             const SizedBox(height: 32),
             Text(
               widget.item.name,
+=======
+            Center(
+              child: Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: item.boxColor.withValues(alpha: 77),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.inventory,
+                  size: 80,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              item.name,
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -130,7 +159,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             ),
             const SizedBox(height: 16),
             Text(
+<<<<<<< HEAD
               '\$${widget.item.price} ${widget.item.priceType == 'per_day' ? '/day' : '/hour'}',
+=======
+              '\$${item.price} ${item.priceType == 'per_day' ? '/day' : '/hour'}',
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
               style: const TextStyle(
                 fontSize: 18,
                 color: Color(0xff92A3FD),
@@ -149,7 +182,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             ),
             const SizedBox(height: 8),
             Text(
+<<<<<<< HEAD
               widget.item.description,
+=======
+              item.description,
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
@@ -166,7 +203,11 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             Wrap(
               spacing: 8.0,
               runSpacing: 4.0,
+<<<<<<< HEAD
               children: widget.item.tags.map((tag) {
+=======
+              children: item.tags.map((tag) {
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
                 return Chip(
                   label: Text(tag),
                   backgroundColor: const Color(0xff92A3FD).withAlpha(77),

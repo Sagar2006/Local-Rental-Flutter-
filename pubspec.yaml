@@ -17,11 +17,14 @@ dependencies:
   cloud_firestore: ^5.6.1
   provider: ^6.1.1
   firebase_database: ^11.3.0
+<<<<<<< HEAD
   image_picker: ^1.0.7
   flutter_carousel_widget: ^2.2.0
   video_player: ^2.8.2
   http: ^1.2.0
   cached_network_image: ^3.3.1
+=======
+>>>>>>> 695ea4201ba1ae45ce934cdfedd50e1c631a7520
 
 dev_dependencies:
   flutter_test:
