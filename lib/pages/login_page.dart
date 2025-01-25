@@ -27,7 +27,15 @@ class LoginPageState extends State<LoginPage> {
         _passwordController.text.trim(),
       );
 
-      if (!success && mounted) {
+      if (success) {
+        if (!mounted) return;
+        // Clear the navigation stack and go to home
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+              (route) => false,
+        );
+      } else if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(authProvider.error ?? 'An error occurred')),
         );
