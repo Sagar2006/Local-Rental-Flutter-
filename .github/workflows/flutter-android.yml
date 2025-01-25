@@ -43,4 +43,10 @@ jobs:
         artifacts: build/app/outputs/flutter-apk/app-release.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
- 
+    - name: Upload APK to Firebase App Distribution
+      env:
+        FIREBASE_AUTH_TOKEN: ${{ secrets.FIREBASE_AUTH_TOKEN }}
+      run: |
+        firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+          --app <your-firebase-app-id> \
+          --groups "testers"
