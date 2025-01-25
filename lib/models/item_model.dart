@@ -9,6 +9,7 @@ class ItemModel {
   final int quantity;
   final List<String> mediaUrls; // For both images and videos
   final List<bool> isVideo; // Indicates if each mediaUrl is a video
+  final String featuredImageUrl;
 
   ItemModel({
     required this.id,
@@ -21,31 +22,34 @@ class ItemModel {
     required this.quantity,
     required this.mediaUrls,
     required this.isVideo,
+    required this.featuredImageUrl,
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'price': price,
-        'priceType': priceType,
-        'tags': tags,
-        'userId': userId,
-        'quantity': quantity,
-        'mediaUrls': mediaUrls,
-        'isVideo': isVideo,
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'price': price,
+    'priceType': priceType,
+    'tags': tags,
+    'userId': userId,
+    'quantity': quantity,
+    'mediaUrls': mediaUrls,
+    'isVideo': isVideo,
+    'featuredImageUrl': featuredImageUrl,
+  };
 
   factory ItemModel.fromJson(Map<String, dynamic> json) => ItemModel(
-        id: json['id'],
-        name: json['name'],
-        description: json['description'],
-        price: json['price'].toDouble(),
-        priceType: json['priceType'],
-        tags: List<String>.from(json['tags']),
-        userId: json['userId'],
-        quantity: json['quantity'] ?? 0,
-        mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
-        isVideo: List<bool>.from(json['isVideo'] ?? []),
-      );
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    price: json['price'].toDouble(),
+    priceType: json['priceType'],
+    tags: List<String>.from(json['tags']),
+    userId: json['userId'],
+    quantity: json['quantity'] ?? 0,
+    mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
+    isVideo: List<bool>.from(json['isVideo'] ?? []),
+    featuredImageUrl: json['featuredImageUrl'] ?? '',
+  );
 }

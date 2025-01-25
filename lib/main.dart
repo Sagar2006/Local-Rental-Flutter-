@@ -7,8 +7,9 @@ import 'package:localrental_flutter/pages/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:localrental_flutter/providers/auth_provider.dart';
 import 'package:localrental_flutter/widgets/auth_wrapper.dart';
-// import 'package:localrental_flutter/widgets/main_navigation.dart';
+import 'package:localrental_flutter/widgets/main_navigation.dart';
 import 'firebase_options.dart';
+import 'package:localrental_flutter/providers/cart_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,17 +35,12 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FitnessAuthProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(fontFamily: 'Poppins'),
         home: const AuthWrapper(),
-        routes: {
-          '/home': (context) => const HomePage(),
-          '/add-item': (context) => const AddItemPage(),
-          '/cart': (context) => const CartPage(),
-          '/login': (context) => const LoginPage(),
-        },
       ),
     );
   }

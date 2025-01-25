@@ -4,6 +4,8 @@ import 'package:localrental_flutter/models/item_display_model.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import 'package:localrental_flutter/providers/cart_provider.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final ItemDisplayModel item;
@@ -17,11 +19,17 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   final Map<String, VideoPlayerController> _controllers = {};
   int _currentMediaIndex = 0;
+  int _quantity = 1;
+  int _rentDuration = 1;
+  bool _isLoading = false;
+  String _selectedFeaturedImage = '';
+  bool _isInCart = false;
 
   @override
   void initState() {
     super.initState();
     _initializeVideoControllers();
+    _checkIfItemInCart();
   }
 
   Future<void> _initializeVideoControllers() async {
@@ -35,6 +43,14 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       }
     }
     setState(() {});
+  }
+
+  void _checkIfItemInCart() {
+    final cartProvider = context.read<CartProvider>();
+    setState(() {
+      _isInCart = cartProvider.items.values
+          .any((item) => item.itemId == widget.item.id);
+    });
   }
 
   @override
@@ -79,6 +95,43 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         fit: BoxFit.cover,
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) => const Icon(Icons.error),
+      );
+    }
+  }
+
+  Future<void> _addToCart() async {
+    setState(() => _isLoading = true);
+    try {
+      await context.read<CartProvider>().addItem(
+        itemId: widget.item.id,
+        name: widget.item.name,
+        price: widget.item.price,
+        priceType: widget.item.priceType,
+        imageUrl: widget.item.featuredImageUrl,
+        quantity: 1,
+        rentDuration: 1,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _isInCart = true;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Item added to cart successfully!'),
+          backgroundColor: Color(0xff92A3FD),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add item to cart: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -173,7 +226,60 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                 );
               }).toList(),
             ),
-            // Add more details or actions here as needed
+            const SizedBox(height: 24),
+            // Only show Add to Cart button if not in cart
+            if (!_isInCart)
+              Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : () => _addToCart(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff92A3FD),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                        'Add to Cart',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 50),  // Added more bottom padding
+                ],
+              )
+            else
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Item Already in Cart',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 50),  // Added more bottom padding
+                ],
+              ),
           ],
         ),
       ),

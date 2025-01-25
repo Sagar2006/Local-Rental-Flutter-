@@ -26,6 +26,7 @@ class _AddItemPageState extends State<AddItemPage> {
   final List<bool> _isVideo = [];
   final ImagePicker _picker = ImagePicker();
   bool _uploadingMedia = false;
+  int _featuredImageIndex = -1;
 
   // Predefined tags
   final List<String> _availableTags = [
@@ -77,6 +78,7 @@ class _AddItemPageState extends State<AddItemPage> {
       _isVideo.clear();
       _isLoading = false;
       _uploadingMedia = false;
+      _featuredImageIndex = -1;
     });
   }
 
@@ -86,6 +88,24 @@ class _AddItemPageState extends State<AddItemPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select at least one tag'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (_selectedMedia.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add at least one image'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (_featuredImageIndex == -1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a featured image'),
           backgroundColor: Colors.red,
         ),
       );
@@ -117,6 +137,7 @@ class _AddItemPageState extends State<AddItemPage> {
         quantity: int.parse(_quantityController.text),
         mediaUrls: mediaUrls,
         isVideo: _isVideo,
+        featuredImageUrl: mediaUrls[_featuredImageIndex],
       );
 
       await newItemRef.set(item.toJson());
@@ -346,57 +367,7 @@ class _AddItemPageState extends State<AddItemPage> {
                     const SizedBox(height: 8),
 
                     // Display selected media previews
-                    if (_selectedMedia.isNotEmpty)
-                      SizedBox(
-                        height: 100,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _selectedMedia.length,
-                          itemBuilder: (context, index) {
-                            return Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(right: 8),
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: _isVideo[index]
-                                        ? const Icon(Icons.video_file, size: 50)
-                                        : Image.file(
-                                      _selectedMedia[index],
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 4,
-                                  right: 12,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedMedia.removeAt(index);
-                                        _isVideo.removeAt(index);
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.close, size: 20),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+                    _buildMediaPreview(),
                     const SizedBox(height: 16),
 
                     // Media Selection Buttons
@@ -464,6 +435,114 @@ class _AddItemPageState extends State<AddItemPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMediaPreview() {
+    if (_selectedMedia.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Selected Media:',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _selectedMedia.length,
+            itemBuilder: (context, index) {
+              final isSelected = index == _featuredImageIndex;
+              return Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (!_isVideo[index]) {
+                        setState(() {
+                          _featuredImageIndex = index;
+                        });
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: isSelected ? const Color(0xff92A3FD) : Colors.grey,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: _isVideo[index]
+                                ? const Icon(Icons.video_file, size: 50)
+                                : Image.file(
+                              _selectedMedia[index],
+                              fit: BoxFit.cover,
+                              height: 100,
+                              width: 100,
+                            ),
+                          ),
+                          if (!_isVideo[index])
+                            Positioned(
+                              bottom: 4,
+                              right: 4,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: isSelected ? const Color(0xff92A3FD) : Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  isSelected ? 'Featured' : 'Tap to feature',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isSelected ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (_featuredImageIndex == index) {
+                            _featuredImageIndex = -1;
+                          } else if (_featuredImageIndex > index) {
+                            _featuredImageIndex--;
+                          }
+                          _selectedMedia.removeAt(index);
+                          _isVideo.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 20),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

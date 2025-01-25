@@ -10,6 +10,8 @@ import 'package:localrental_flutter/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:localrental_flutter/pages/add_item_page.dart';
 // import 'package:localrental_flutter/pages/cart_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:localrental_flutter/widgets/auth_wrapper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -151,12 +153,10 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  // Navigate to ItemDetailPage and pass the item data
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ItemDetailPage(item: _items[index]),
+                      builder: (context) => ItemDetailPage(item: _items[index]),
                     ),
                   );
                 },
@@ -172,14 +172,42 @@ class _HomePageState extends State<HomePage> {
                       Container(
                         height: 100,
                         width: 100,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 8,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                        child: const Icon(
-                          Icons.inventory,
-                          size: 50,
-                          color: Colors.black54,
+                        child: ClipOval(
+                          child: _items[index].featuredImageUrl.isNotEmpty
+                              ? CachedNetworkImage(
+                            imageUrl: _items[index].featuredImageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) =>
+                            const Icon(
+                              Icons.inventory,
+                              size: 50,
+                              color: Colors.black54,
+                            ),
+                          )
+                              : const Icon(
+                            Icons.inventory,
+                            size: 50,
+                            color: Colors.black54,
+                          ),
                         ),
                       ),
                       Column(
@@ -377,9 +405,9 @@ class _HomePageState extends State<HomePage> {
                     try {
                       await context.read<FitnessAuthProvider>().signOut();
                       if (!mounted) return;
-                      Navigator.pushNamedAndRemoveUntil(
+                      Navigator.pushAndRemoveUntil(
                         context,
-                        '/login',
+                        MaterialPageRoute(builder: (context) => const AuthWrapper()),
                             (route) => false,
                       );
                     } catch (e) {
@@ -411,31 +439,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: 'Add Item',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
-          ),
-        ],
-        currentIndex: 0,
-        selectedItemColor: const Color(0xff92A3FD),
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.pushNamed(context, '/add-item');
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/cart');
-          }
-        },
       ),
     );
   }
