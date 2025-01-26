@@ -4,6 +4,7 @@ import 'package:localrental_flutter/pages/add_item_page.dart';
 import 'package:localrental_flutter/pages/cart_page.dart';
 import 'package:localrental_flutter/pages/home.dart';
 import 'package:localrental_flutter/pages/login_page.dart';
+import 'package:localrental_flutter/pages/signup_page.dart';
 import 'package:provider/provider.dart';
 import 'package:localrental_flutter/providers/auth_provider.dart';
 import 'package:localrental_flutter/widgets/auth_wrapper.dart';
@@ -41,6 +42,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(fontFamily: 'Poppins'),
         home: const AuthWrapper(),
+        routes: {
+          '/home': (context) => const MainNavigation(),
+          '/login': (context) => const LoginPage(),
+          '/signup': (context) => const SignupPage(),
+          '/add_item': (context) => const AddItemPage(),
+          '/cart': (context) => const CartPage(),
+        },
       ),
     );
   }

@@ -45,9 +45,13 @@ flutter:
     - assets/category_icons/
     - assets/category_icons/beauty.svg
     - assets/category_icons/electronics.svg
-    - assets/category_icons/pancakes.svg
+    - assets/category_icons/cooking.svg
     - assets/category_icons/fitness.svg
     - assets/category_icons/travel.svg
+    - assets/category_icons/all.svg
+    - assets/category_icons/entertainment.svg
+    - assets/category_icons/sports.svg
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

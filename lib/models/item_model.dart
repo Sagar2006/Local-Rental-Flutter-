@@ -10,6 +10,7 @@ class ItemModel {
   final List<String> mediaUrls; // For both images and videos
   final List<bool> isVideo; // Indicates if each mediaUrl is a video
   final String featuredImageUrl;
+  final List<String> categories;
 
   ItemModel({
     required this.id,
@@ -23,6 +24,7 @@ class ItemModel {
     required this.mediaUrls,
     required this.isVideo,
     required this.featuredImageUrl,
+    required this.categories,
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +39,7 @@ class ItemModel {
     'mediaUrls': mediaUrls,
     'isVideo': isVideo,
     'featuredImageUrl': featuredImageUrl,
+    'categories': categories,
   };
 
   factory ItemModel.fromJson(Map<String, dynamic> json) => ItemModel(
@@ -51,5 +54,6 @@ class ItemModel {
     mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
     isVideo: List<bool>.from(json['isVideo'] ?? []),
     featuredImageUrl: json['featuredImageUrl'] ?? '',
+    categories: List<String>.from(json['categories'] ?? []),
   );
 }

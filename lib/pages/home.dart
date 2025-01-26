@@ -43,9 +43,24 @@ class _HomePageState extends State<HomePage> {
 
   final List<CategoryItem> categories = [
     CategoryItem(
+      name: 'All',
+      iconPath: 'assets/category_icons/all.svg',
+      color: const Color(0xff92A3FD),
+    ),
+    CategoryItem(
       name: 'Electronics',
       iconPath: 'assets/category_icons/electronics.svg',
       color: const Color(0xff9DCEFF),
+    ),
+    CategoryItem(
+      name: 'Sports',
+      iconPath: 'assets/category_icons/sports.svg',
+      color: const Color(0xffEEA4CE),
+    ),
+    CategoryItem(
+      name: 'Entertainment',
+      iconPath: 'assets/category_icons/entertainment.svg',
+      color: const Color(0xff92A3FD),
     ),
     CategoryItem(
       name: 'Beauty',
@@ -68,6 +83,8 @@ class _HomePageState extends State<HomePage> {
       color: const Color(0xff92A3FD),
     ),
   ];
+
+  String? _selectedCategory;
 
   @override
   void initState() {
@@ -124,8 +141,16 @@ class _HomePageState extends State<HomePage> {
           child: Text(_error, style: const TextStyle(color: Colors.red)));
     }
 
-    if (_items.isEmpty) {
-      return const Center(child: Text('No items available'));
+    final filteredItems = _selectedCategory != null && _selectedCategory != 'All'
+        ? _items.where((item) => item.categories.contains(_selectedCategory)).toList()
+        : _items;
+
+    if (filteredItems.isEmpty) {
+      return Center(
+        child: Text(_selectedCategory != null
+            ? 'No items available in ${_selectedCategory} category'
+            : 'No items available'),
+      );
     }
 
     return Column(
@@ -146,7 +171,7 @@ class _HomePageState extends State<HomePage> {
         SizedBox(
           height: 240,
           child: ListView.separated(
-            itemCount: _items.length,
+            itemCount: filteredItems.length,
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: 20, right: 20),
             separatorBuilder: (context, index) => const SizedBox(width: 25),
@@ -156,14 +181,14 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(item: _items[index]),
+                      builder: (context) => ItemDetailPage(item: filteredItems[index]),
                     ),
                   );
                 },
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: _items[index].boxColor.withValues(alpha: 77),
+                    color: filteredItems[index].boxColor.withValues(alpha: 77),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -189,9 +214,9 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         child: ClipOval(
-                          child: _items[index].featuredImageUrl.isNotEmpty
+                          child: filteredItems[index].featuredImageUrl.isNotEmpty
                               ? CachedNetworkImage(
-                            imageUrl: _items[index].featuredImageUrl,
+                            imageUrl: filteredItems[index].featuredImageUrl,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => const Center(
                               child: CircularProgressIndicator(),
@@ -213,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                       Column(
                         children: [
                           Text(
-                            _items[index].name,
+                            filteredItems[index].name,
                             style: const TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
@@ -221,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Text(
-                            _items[index].description,
+                            filteredItems[index].description,
                             style: const TextStyle(
                               color: Color(0xff7B6F72),
                               fontSize: 12,
@@ -232,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '\$${_items[index].price} ${_items[index].priceType == 'per_day' ? '/day' : '/hour'}',
+                            '\$${filteredItems[index].price} ${filteredItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w600,
@@ -247,16 +272,16 @@ class _HomePageState extends State<HomePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              _items[index].boxColor.withValues(alpha: 77),
-                              _items[index].boxColor.withValues(alpha: 77),
+                              filteredItems[index].boxColor.withValues(alpha: 77),
+                              filteredItems[index].boxColor.withValues(alpha: 77),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: Center(
                           child: Text(
-                            _items[index].tags.isNotEmpty
-                                ? _items[index].tags[0]
+                            filteredItems[index].tags.isNotEmpty
+                                ? filteredItems[index].tags[0]
                                 : 'View',
                             style: const TextStyle(
                               color: Colors.white,
@@ -332,36 +357,46 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             separatorBuilder: (context, index) => const SizedBox(width: 25),
             itemBuilder: (context, index) {
-              return Container(
-                width: 100,
-                decoration: BoxDecoration(
-                  color: categories[index].color.withValues(alpha: 77),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
+              final isSelected = categories[index].name == _selectedCategory;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedCategory = isSelected ? null : categories[index].name;
+                  });
+                },
+                child: Container(
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? categories[index].color
+                        : categories[index].color.withAlpha(77),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white.withOpacity(0.8) : Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(categories[index].iconPath),
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(categories[index].iconPath),
+                      const SizedBox(height: 8),
+                      Text(
+                        categories[index].name,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : categories[index].color,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      categories[index].name,
-                      style: TextStyle(
-                        color: categories[index].color,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

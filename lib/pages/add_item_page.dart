@@ -27,6 +27,17 @@ class _AddItemPageState extends State<AddItemPage> {
   final ImagePicker _picker = ImagePicker();
   bool _uploadingMedia = false;
   int _featuredImageIndex = -1;
+  final List<String> _selectedCategories = [];
+
+  final List<String> _availableCategories = [
+    'Electronics',
+    'Sports',
+    'Entertainment',
+    'Beauty',
+    'Cooking',
+    'Fitness',
+    'Travel',
+  ];
 
   // Predefined tags
   final List<String> _availableTags = [
@@ -79,6 +90,7 @@ class _AddItemPageState extends State<AddItemPage> {
       _isLoading = false;
       _uploadingMedia = false;
       _featuredImageIndex = -1;
+      _selectedCategories.clear();
     });
   }
 
@@ -111,6 +123,15 @@ class _AddItemPageState extends State<AddItemPage> {
       );
       return;
     }
+    if (_selectedCategories.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one category'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     try {
       setState(() {
@@ -138,6 +159,7 @@ class _AddItemPageState extends State<AddItemPage> {
         mediaUrls: mediaUrls,
         isVideo: _isVideo,
         featuredImageUrl: mediaUrls[_featuredImageIndex],
+        categories: _selectedCategories,
       );
 
       await newItemRef.set(item.toJson());
@@ -157,7 +179,7 @@ class _AddItemPageState extends State<AddItemPage> {
       if (!mounted) return;
 
       // Navigate back to home and replace the current page
-      Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+      Navigator.of(context).pushReplacementNamed('/home');
 
       // Show success message after navigation
       ScaffoldMessenger.of(context).showSnackBar(
@@ -357,6 +379,10 @@ class _AddItemPageState extends State<AddItemPage> {
                         );
                       }).toList(),
                     ),
+                    const SizedBox(height: 16),
+
+                    // Category Selection
+                    _buildCategorySelection(),
                     const SizedBox(height: 24),
 
                     // Media Selection Section
@@ -541,6 +567,43 @@ class _AddItemPageState extends State<AddItemPage> {
               );
             },
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategorySelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select Categories',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          children: _availableCategories.map((category) {
+            final isSelected = _selectedCategories.contains(category);
+            return FilterChip(
+              label: Text(category),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedCategories.add(category);
+                  } else {
+                    _selectedCategories.remove(category);
+                  }
+                });
+              },
+              selectedColor: const Color(0xff92A3FD),
+              checkmarkColor: Colors.white,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

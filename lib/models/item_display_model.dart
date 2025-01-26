@@ -13,6 +13,7 @@ class ItemDisplayModel {
   final List<String> mediaUrls;
   final List<bool> isVideo;
   final String featuredImageUrl;
+  final List<String> categories;
   bool viewIsSelected;
 
   ItemDisplayModel({
@@ -28,6 +29,7 @@ class ItemDisplayModel {
     required this.mediaUrls,
     required this.isVideo,
     required this.featuredImageUrl,
+    required this.categories,
     this.viewIsSelected = false,
   });
 
@@ -46,6 +48,7 @@ class ItemDisplayModel {
       mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
       isVideo: List<bool>.from(json['isVideo'] ?? []),
       featuredImageUrl: json['featuredImageUrl'] ?? '',
+      categories: List<String>.from(json['categories'] ?? []),
       viewIsSelected: false,
     );
   }
