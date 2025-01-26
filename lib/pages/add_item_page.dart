@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:localrental_flutter/models/item_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:async';
 import '../services/imgur_service.dart';
 
 class AddItemPage extends StatefulWidget {
@@ -28,6 +29,8 @@ class _AddItemPageState extends State<AddItemPage> {
   bool _uploadingMedia = false;
   int _featuredImageIndex = -1;
   final List<String> _selectedCategories = [];
+  double _uploadProgress = 0.0;
+  int _currentUploadIndex = 0;
 
   final List<String> _availableCategories = [
     'Electronics',
@@ -99,12 +102,32 @@ class _AddItemPageState extends State<AddItemPage> {
   Future<List<String>> _uploadMedia() async {
     List<String> urls = [];
     for (int i = 0; i < _selectedMedia.length; i++) {
+      setState(() {
+        _uploadProgress = 0.0;
+        _currentUploadIndex = i;
+      });
+
       final bytes = await _selectedMedia[i].readAsBytes();
+
+      // Listen to upload progress if it's a video
+      StreamSubscription? progressSubscription;
+      if (_isVideo[i]) {
+        progressSubscription = ImgurService.uploadProgress.listen((progress) {
+          setState(() {
+            _uploadProgress = progress;
+          });
+        });
+      }
+
       final url = await ImgurService.uploadFile(
         bytes,
         'item_media_${DateTime.now().millisecondsSinceEpoch}',
         isVideo: _isVideo[i],
       );
+
+      // Cancel progress subscription
+      await progressSubscription?.cancel();
+
       if (url != null) urls.add(url);
     }
     return urls;
@@ -499,6 +522,9 @@ class _AddItemPageState extends State<AddItemPage> {
                     ),
                     const SizedBox(height: 24),
 
+                    // Upload Progress
+                    _buildUploadProgress(),
+
                     // Submit Button with padding at bottom
                     Padding(
                       padding: EdgeInsets.only(
@@ -678,6 +704,25 @@ class _AddItemPageState extends State<AddItemPage> {
             );
           }).toList(),
         ),
+      ],
+    );
+  }
+
+  Widget _buildUploadProgress() {
+    if (!_uploadingMedia || _uploadProgress == 0.0) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Text('Uploading media ${_currentUploadIndex + 1}/${_selectedMedia.length}'),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: _uploadProgress,
+          backgroundColor: Colors.grey[200],
+          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff92A3FD)),
+        ),
+        const SizedBox(height: 8),
+        Text('${(_uploadProgress * 100).toStringAsFixed(1)}%'),
       ],
     );
   }
