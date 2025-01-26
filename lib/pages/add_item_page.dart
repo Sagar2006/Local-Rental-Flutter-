@@ -52,15 +52,47 @@ class _AddItemPageState extends State<AddItemPage> {
   ];
 
   Future<void> _pickMedia(ImageSource source, bool isVideo) async {
-    final XFile? file = isVideo
-        ? await _picker.pickVideo(source: source)
-        : await _picker.pickImage(source: source);
+    try {
+      if (isVideo) {
+        final XFile? file = await _picker.pickVideo(
+          source: source,
+          maxDuration: const Duration(seconds: 30), // Limit video duration
+        );
 
-    if (file != null) {
-      setState(() {
-        _selectedMedia.add(File(file.path));
-        _isVideo.add(isVideo);
-      });
+        if (file != null) {
+          final fileSize = await file.length();
+          if (fileSize > 200 * 1024 * 1024) { // 200MB limit
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Video is too large. Maximum size is 200MB'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+          setState(() {
+            _selectedMedia.add(File(file.path));
+            _isVideo.add(true);
+          });
+        }
+      } else {
+        final XFile? file = await _picker.pickImage(source: source);
+        if (file != null) {
+          setState(() {
+            _selectedMedia.add(File(file.path));
+            _isVideo.add(false);
+          });
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -71,6 +103,7 @@ class _AddItemPageState extends State<AddItemPage> {
       final url = await ImgurService.uploadFile(
         bytes,
         'item_media_${DateTime.now().millisecondsSinceEpoch}',
+        isVideo: _isVideo[i],
       );
       if (url != null) urls.add(url);
     }
@@ -141,6 +174,16 @@ class _AddItemPageState extends State<AddItemPage> {
 
       final mediaUrls = await _uploadMedia();
 
+      // Check if media upload was successful
+      if (mediaUrls.isEmpty) {
+        throw Exception('Failed to upload media files');
+      }
+
+      // Ensure featured image index is valid
+      final featuredImageUrl = _featuredImageIndex < mediaUrls.length
+          ? mediaUrls[_featuredImageIndex]
+          : mediaUrls[0];
+
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
@@ -158,7 +201,7 @@ class _AddItemPageState extends State<AddItemPage> {
         quantity: int.parse(_quantityController.text),
         mediaUrls: mediaUrls,
         isVideo: _isVideo,
-        featuredImageUrl: mediaUrls[_featuredImageIndex],
+        featuredImageUrl: featuredImageUrl,
         categories: _selectedCategories,
       );
 
@@ -206,6 +249,36 @@ class _AddItemPageState extends State<AddItemPage> {
         ),
       );
     }
+  }
+
+  void _showMediaSourceDialog(bool isVideo) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isVideo ? 'Add Video' : 'Add Image'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickMedia(ImageSource.gallery, isVideo);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take from Camera'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickMedia(ImageSource.camera, isVideo);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -401,7 +474,7 @@ class _AddItemPageState extends State<AddItemPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton.icon(
-                          onPressed: () => _pickMedia(ImageSource.gallery, false),
+                          onPressed: () => _showMediaSourceDialog(false),
                           icon: const Icon(Icons.photo_library),
                           label: const Text('Add Image'),
                           style: ElevatedButton.styleFrom(
@@ -412,7 +485,7 @@ class _AddItemPageState extends State<AddItemPage> {
                           ),
                         ),
                         ElevatedButton.icon(
-                          onPressed: () => _pickMedia(ImageSource.gallery, true),
+                          onPressed: () => _showMediaSourceDialog(true),
                           icon: const Icon(Icons.video_library),
                           label: const Text('Add Video'),
                           style: ElevatedButton.styleFrom(
