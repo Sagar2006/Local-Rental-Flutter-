@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 // import 'package:localrental_flutter/pages/cart_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:localrental_flutter/widgets/auth_wrapper.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,7 +35,7 @@ class CategoryItem {
 
 class _HomePageState extends State<HomePage> {
   final List<ItemDisplayModel> _items = [];
-  bool _isLoading = true;
+  bool _isLoading = false;
   String _error = '';
   final List<Color> _alternatingColors = [
     const Color(0xff9DCEFF),
@@ -85,51 +86,110 @@ class _HomePageState extends State<HomePage> {
   ];
 
   String? _selectedCategory;
+  late StreamSubscription<DatabaseEvent> _itemsSubscription;
 
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    _setupItemsListener();
   }
 
-  Future<void> _loadItems() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = '';
-      });
-
-      final databaseRef = FirebaseDatabase.instance.ref();
-      final snapshot = await databaseRef.child('items').get();
-
-      if (snapshot.exists) {
-        final items = <ItemDisplayModel>[];
-        int colorIndex = 0;
-
-        for (var child in snapshot.children) {
-          final data = child.value as Map<dynamic, dynamic>;
-          items.add(ItemDisplayModel.fromJson(
-            Map<String, dynamic>.from(data),
-            boxColor: _alternatingColors[colorIndex % 2],
-          ));
-          colorIndex++;
+  void _setupItemsListener() {
+    final databaseRef = FirebaseDatabase.instance.ref();
+    
+    _itemsSubscription = databaseRef.child('items').onValue.listen((event) {
+      try {
+        final snapshot = event.snapshot;
+        
+        if (snapshot.value == null) {
+          setState(() {
+            _items.clear();
+            _error = '';
+          });
+          return;
         }
 
+        if (snapshot.exists) {
+          final items = <ItemDisplayModel>[];
+          int colorIndex = 0;
+
+          final data = snapshot.value as Map<dynamic, dynamic>;
+          data.forEach((key, value) {
+            items.add(ItemDisplayModel.fromJson(
+              Map<String, dynamic>.from(value),
+              boxColor: _alternatingColors[colorIndex % 2],
+            ));
+            colorIndex++;
+          });
+
+          setState(() {
+            _items.clear();
+            _items.addAll(items);
+            _error = '';
+          });
+        }
+      } catch (e) {
         setState(() {
-          _items.clear();
-          _items.addAll(items);
+          _error = 'Error loading items: $e';
         });
       }
-    } catch (e) {
+    }, onError: (error) {
       setState(() {
-        _error = 'Error loading items: $e';
+        _error = 'Database error: $error';
       });
-    } finally {
+    });
+  }
+
+  @override
+  void dispose() {
+    _itemsSubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _handleRefresh() async {
+  if (_isLoading) return;
+  
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    final databaseRef = FirebaseDatabase.instance.ref();
+    final snapshot = await databaseRef.child('items').get();
+    
+    if (!snapshot.exists) {
       setState(() {
+        _items.clear();
         _isLoading = false;
       });
+      return;
     }
+
+    final items = <ItemDisplayModel>[];
+    int colorIndex = 0;
+    
+    final data = snapshot.value as Map<dynamic, dynamic>;
+    data.forEach((key, value) {
+      items.add(ItemDisplayModel.fromJson(
+        Map<String, dynamic>.from(value),
+        boxColor: _alternatingColors[colorIndex % 2],
+      ));
+      colorIndex++;
+    });
+
+    setState(() {
+      _items.clear();
+      _items.addAll(items);
+      _isLoading = false;
+    });
+
+  } catch (e) {
+    setState(() {
+      _error = 'Error loading items: $e';
+      _isLoading = false;
+    });
   }
+}
 
   Widget _dietSection() {
     if (_isLoading) {
@@ -463,14 +523,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Expanded(
-            child: ListView(
-              children: [
-                _searchField(),
-                const SizedBox(height: 40),
-                _categoriesSection(),
-                const SizedBox(height: 40),
-                _dietSection(),
-              ],
+            child: RefreshIndicator(
+              onRefresh: _handleRefresh,
+              color: const Color(0xff92A3FD), // Match app theme color
+              child: ListView(
+                children: [
+                  _searchField(),
+                  const SizedBox(height: 40),
+                  _categoriesSection(),
+                  const SizedBox(height: 40),
+                  _dietSection(),
+                ],
+              ),
             ),
           ),
         ],
