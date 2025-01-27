@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
     if (filteredItems.isEmpty) {
       return Center(
         child: Text(_selectedCategory != null
-            ? 'No items available in ${_selectedCategory} category'
+            ? 'No items available in $_selectedCategory category'
             : 'No items available'),
       );
     }
@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                               spreadRadius: 1,
                               blurRadius: 5,
                               offset: const Offset(0, 3),
@@ -379,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white.withOpacity(0.8) : Colors.white,
+                          color: isSelected ? Colors.white.withValues(alpha: 0.8) : Colors.white,
                           shape: BoxShape.circle,
                         ),
                         child: Padding(

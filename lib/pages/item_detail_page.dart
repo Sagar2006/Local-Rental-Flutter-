@@ -19,10 +19,10 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   final Map<String, VideoPlayerController> _controllers = {};
   int _currentMediaIndex = 0;
-  int _quantity = 1;
-  int _rentDuration = 1;
+  final int _quantity = 1;
+  final int _rentDuration = 1;
   bool _isLoading = false;
-  String _selectedFeaturedImage = '';
+  final String _selectedFeaturedImage = '';
   bool _isInCart = false;
 
   @override

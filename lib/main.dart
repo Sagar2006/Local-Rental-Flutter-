@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:localrental_flutter/pages/add_item_page.dart';
 import 'package:localrental_flutter/pages/cart_page.dart';
-import 'package:localrental_flutter/pages/home.dart';
 import 'package:localrental_flutter/pages/login_page.dart';
 import 'package:localrental_flutter/pages/signup_page.dart';
 import 'package:provider/provider.dart';

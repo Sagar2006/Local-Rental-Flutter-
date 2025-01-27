@@ -10,7 +10,8 @@ plugins {
 
 android {
     namespace = "com.example.localrental_flutter"
-    compileSdk = flutter.compileSdkVersion
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
