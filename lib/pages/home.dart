@@ -96,11 +96,19 @@ class _HomePageState extends State<HomePage> {
 
   void _setupItemsListener() {
     final databaseRef = FirebaseDatabase.instance.ref();
+<<<<<<< HEAD
     
     _itemsSubscription = databaseRef.child('items').onValue.listen((event) {
       try {
         final snapshot = event.snapshot;
         
+=======
+
+    _itemsSubscription = databaseRef.child('items').onValue.listen((event) {
+      try {
+        final snapshot = event.snapshot;
+
+>>>>>>> e9251a9 (Test commit)
         if (snapshot.value == null) {
           setState(() {
             _items.clear();
@@ -147,6 +155,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _handleRefresh() async {
+<<<<<<< HEAD
   if (_isLoading) return;
   
   setState(() {
@@ -190,6 +199,50 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
+=======
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final databaseRef = FirebaseDatabase.instance.ref();
+      final snapshot = await databaseRef.child('items').get();
+
+      if (!snapshot.exists) {
+        setState(() {
+          _items.clear();
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final items = <ItemDisplayModel>[];
+      int colorIndex = 0;
+
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      data.forEach((key, value) {
+        items.add(ItemDisplayModel.fromJson(
+          Map<String, dynamic>.from(value),
+          boxColor: _alternatingColors[colorIndex % 2],
+        ));
+        colorIndex++;
+      });
+
+      setState(() {
+        _items.clear();
+        _items.addAll(items);
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Error loading items: $e';
+        _isLoading = false;
+      });
+    }
+  }
+>>>>>>> e9251a9 (Test commit)
 
   Widget _dietSection() {
     if (_isLoading) {
@@ -201,9 +254,18 @@ class _HomePageState extends State<HomePage> {
           child: Text(_error, style: const TextStyle(color: Colors.red)));
     }
 
+<<<<<<< HEAD
     final filteredItems = _selectedCategory != null && _selectedCategory != 'All'
         ? _items.where((item) => item.categories.contains(_selectedCategory)).toList()
         : _items;
+=======
+    final filteredItems =
+        _selectedCategory != null && _selectedCategory != 'All'
+            ? _items
+                .where((item) => item.categories.contains(_selectedCategory))
+                .toList()
+            : _items;
+>>>>>>> e9251a9 (Test commit)
 
     if (filteredItems.isEmpty) {
       return Center(
@@ -241,7 +303,12 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
+<<<<<<< HEAD
                       builder: (context) => ItemDetailPage(item: filteredItems[index]),
+=======
+                      builder: (context) =>
+                          ItemDetailPage(item: filteredItems[index]),
+>>>>>>> e9251a9 (Test commit)
                     ),
                   );
                 },
@@ -274,6 +341,7 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         child: ClipOval(
+<<<<<<< HEAD
                           child: filteredItems[index].featuredImageUrl.isNotEmpty
                               ? CachedNetworkImage(
                             imageUrl: filteredItems[index].featuredImageUrl,
@@ -293,6 +361,30 @@ class _HomePageState extends State<HomePage> {
                             size: 50,
                             color: Colors.black54,
                           ),
+=======
+                          child: filteredItems[index]
+                                  .featuredImageUrl
+                                  .isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl:
+                                      filteredItems[index].featuredImageUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(
+                                    Icons.inventory,
+                                    size: 50,
+                                    color: Colors.black54,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.inventory,
+                                  size: 50,
+                                  color: Colors.black54,
+                                ),
+>>>>>>> e9251a9 (Test commit)
                         ),
                       ),
                       Column(
@@ -332,8 +424,17 @@ class _HomePageState extends State<HomePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
+<<<<<<< HEAD
                               filteredItems[index].boxColor.withValues(alpha: 77),
                               filteredItems[index].boxColor.withValues(alpha: 77),
+=======
+                              filteredItems[index]
+                                  .boxColor
+                                  .withValues(alpha: 77),
+                              filteredItems[index]
+                                  .boxColor
+                                  .withValues(alpha: 77),
+>>>>>>> e9251a9 (Test commit)
                             ],
                           ),
                           borderRadius: BorderRadius.circular(50),
@@ -421,7 +522,12 @@ class _HomePageState extends State<HomePage> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
+<<<<<<< HEAD
                     _selectedCategory = isSelected ? null : categories[index].name;
+=======
+                    _selectedCategory =
+                        isSelected ? null : categories[index].name;
+>>>>>>> e9251a9 (Test commit)
                   });
                 },
                 child: Container(
@@ -439,7 +545,13 @@ class _HomePageState extends State<HomePage> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
+<<<<<<< HEAD
                           color: isSelected ? Colors.white.withValues(alpha: 0.8) : Colors.white,
+=======
+                          color: isSelected
+                              ? Colors.white.withValues(alpha: 0.8)
+                              : Colors.white,
+>>>>>>> e9251a9 (Test commit)
                           shape: BoxShape.circle,
                         ),
                         child: Padding(
@@ -451,7 +563,13 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         categories[index].name,
                         style: TextStyle(
+<<<<<<< HEAD
                           color: isSelected ? Colors.white : categories[index].color,
+=======
+                          color: isSelected
+                              ? Colors.white
+                              : categories[index].color,
+>>>>>>> e9251a9 (Test commit)
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -502,8 +620,14 @@ class _HomePageState extends State<HomePage> {
                       if (!mounted) return;
                       Navigator.pushAndRemoveUntil(
                         context,
+<<<<<<< HEAD
                         MaterialPageRoute(builder: (context) => const AuthWrapper()),
                             (route) => false,
+=======
+                        MaterialPageRoute(
+                            builder: (context) => const AuthWrapper()),
+                        (route) => false,
+>>>>>>> e9251a9 (Test commit)
                       );
                     } catch (e) {
                       if (!mounted) return;
@@ -542,3 +666,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+<<<<<<< HEAD
+=======
+//test commit
+>>>>>>> e9251a9 (Test commit)
