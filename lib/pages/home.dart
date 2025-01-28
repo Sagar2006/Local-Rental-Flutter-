@@ -96,15 +96,11 @@ class _HomePageState extends State<HomePage> {
 
   void _setupItemsListener() {
     final databaseRef = FirebaseDatabase.instance.ref();
-    
-    _itemsSubscription = databaseRef.child('items').onValue.listen((event) {
-      try {
-        final snapshot = event.snapshot;
-        
 
     _itemsSubscription = databaseRef.child('items').onValue.listen((event) {
       try {
         final snapshot = event.snapshot;
+
         if (snapshot.value == null) {
           setState(() {
             _items.clear();
@@ -151,49 +147,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _handleRefresh() async {
-  if (_isLoading) return;
-  
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    final databaseRef = FirebaseDatabase.instance.ref();
-    final snapshot = await databaseRef.child('items').get();
-    
-    if (!snapshot.exists) {
-      setState(() {
-        _items.clear();
-        _isLoading = false;
-      });
-      return;
-    }
-
-    final items = <ItemDisplayModel>[];
-    int colorIndex = 0;
-    
-    final data = snapshot.value as Map<dynamic, dynamic>;
-    data.forEach((key, value) {
-      items.add(ItemDisplayModel.fromJson(
-        Map<String, dynamic>.from(value),
-        boxColor: _alternatingColors[colorIndex % 2],
-      ));
-      colorIndex++;
-    });
-
-    setState(() {
-      _items.clear();
-      _items.addAll(items);
-      _isLoading = false;
-    });
-
-  } catch (e) {
-    setState(() {
-      _error = 'Error loading items: $e';
-      _isLoading = false;
-    });
-  }
-}
     if (_isLoading) return;
 
     setState(() {
@@ -236,6 +189,7 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
   Widget _dietSection() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -246,9 +200,6 @@ class _HomePageState extends State<HomePage> {
           child: Text(_error, style: const TextStyle(color: Colors.red)));
     }
 
-    final filteredItems = _selectedCategory != null && _selectedCategory != 'All'
-        ? _items.where((item) => item.categories.contains(_selectedCategory)).toList()
-        : _items;
     final filteredItems =
         _selectedCategory != null && _selectedCategory != 'All'
             ? _items
@@ -292,7 +243,6 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ItemDetailPage(item: filteredItems[index]),
                       builder: (context) =>
                           ItemDetailPage(item: filteredItems[index]),
                     ),
@@ -327,25 +277,6 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         child: ClipOval(
-                          child: filteredItems[index].featuredImageUrl.isNotEmpty
-                              ? CachedNetworkImage(
-                            imageUrl: filteredItems[index].featuredImageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                            const Icon(
-                              Icons.inventory,
-                              size: 50,
-                              color: Colors.black54,
-                            ),
-                          )
-                              : const Icon(
-                            Icons.inventory,
-                            size: 50,
-                            color: Colors.black54,
-                          ),
                           child: filteredItems[index]
                                   .featuredImageUrl
                                   .isNotEmpty
@@ -407,8 +338,6 @@ class _HomePageState extends State<HomePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              filteredItems[index].boxColor.withValues(alpha: 77),
-                              filteredItems[index].boxColor.withValues(alpha: 77),
                               filteredItems[index]
                                   .boxColor
                                   .withValues(alpha: 77),
@@ -502,7 +431,6 @@ class _HomePageState extends State<HomePage> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedCategory = isSelected ? null : categories[index].name;
                     _selectedCategory =
                         isSelected ? null : categories[index].name;
                   });
@@ -522,7 +450,6 @@ class _HomePageState extends State<HomePage> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.white.withValues(alpha: 0.8) : Colors.white,
                           color: isSelected
                               ? Colors.white.withValues(alpha: 0.8)
                               : Colors.white,
@@ -537,7 +464,6 @@ class _HomePageState extends State<HomePage> {
                       Text(
                         categories[index].name,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : categories[index].color,
                           color: isSelected
                               ? Colors.white
                               : categories[index].color,
@@ -591,8 +517,6 @@ class _HomePageState extends State<HomePage> {
                       if (!mounted) return;
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const AuthWrapper()),
-                            (route) => false,
                         MaterialPageRoute(
                             builder: (context) => const AuthWrapper()),
                         (route) => false,
