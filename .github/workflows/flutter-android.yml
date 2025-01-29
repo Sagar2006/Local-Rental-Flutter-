@@ -3,8 +3,7 @@ name: Build and Deploy Flutter App
 on:
   push:
     branches:
-      - master  # Trigger on the master branch
-
+      - master 
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,7 +15,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.27.2'  # Update Flutter version to 3.27.2
+        flutter-version: '3.27.2'
     - name: Cleaning Flutter
       run: flutter clean
       
