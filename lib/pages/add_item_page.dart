@@ -713,8 +713,9 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   Widget _buildUploadProgress() {
-    if (!_uploadingMedia || _uploadProgress == 0.0)
+    if (!_uploadingMedia || _uploadProgress == 0.0) {
       return const SizedBox.shrink();
+    }
 
     return Column(
       children: [

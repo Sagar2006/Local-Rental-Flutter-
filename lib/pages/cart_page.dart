@@ -10,10 +10,7 @@ import 'package:localrental_flutter/pages/item_detail_page.dart';
 class CartPage extends StatelessWidget {
   final bool isInMainNavigation;
 
-  const CartPage({
-    super.key,
-    this.isInMainNavigation = false,
-  });
+  const CartPage({super.key, this.isInMainNavigation = false});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +59,7 @@ class CartPage extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.2),
+            color: Colors.grey.withAlpha(50),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, -3),

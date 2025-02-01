@@ -22,12 +22,7 @@ class CartItem {
   });
 
   double get totalPrice {
-    if (priceType == 'hourly' && hourlyPrice != null) {
-      return hourlyPrice! * quantity * rentDuration;
-    } else if (priceType == 'daily' && dailyPrice != null) {
-      return dailyPrice! * quantity * rentDuration;
-    }
-    return 0.0;
+    return (hourlyPrice ?? dailyPrice ?? 0) * quantity * rentDuration;
   }
 
   Map<String, dynamic> toJson() {
@@ -49,12 +44,36 @@ class CartItem {
       id: json['id'],
       itemId: json['itemId'],
       name: json['name'],
-      hourlyPrice: json['hourlyPrice']?.toDouble(),
-      dailyPrice: json['dailyPrice']?.toDouble(),
+      hourlyPrice: json['hourlyPrice'],
+      dailyPrice: json['dailyPrice'],
       quantity: json['quantity'],
       imageUrl: json['imageUrl'],
       rentDuration: json['rentDuration'],
       priceType: json['priceType'],
+    );
+  }
+
+  CartItem copyWith({
+    String? id,
+    String? itemId,
+    String? name,
+    double? hourlyPrice,
+    double? dailyPrice,
+    int? quantity,
+    String? imageUrl,
+    int? rentDuration,
+    String? priceType,
+  }) {
+    return CartItem(
+      id: id ?? this.id,
+      itemId: itemId ?? this.itemId,
+      name: name ?? this.name,
+      hourlyPrice: hourlyPrice ?? this.hourlyPrice,
+      dailyPrice: dailyPrice ?? this.dailyPrice,
+      quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl ?? this.imageUrl,
+      rentDuration: rentDuration ?? this.rentDuration,
+      priceType: priceType ?? this.priceType,
     );
   }
 }

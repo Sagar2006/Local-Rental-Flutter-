@@ -1,9 +1,11 @@
-import 'package:flutter/foundation.dart';
-import 'package:localrental_flutter/models/cart_item.dart';
-import 'package:localrental_flutter/services/cart_service.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../models/cart_item.dart';
 
 class CartProvider with ChangeNotifier {
-  final CartService _cartService = CartService();
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items => {..._items};
@@ -15,15 +17,21 @@ class CartProvider with ChangeNotifier {
   }
 
   void initializeCart() {
-    _cartService.getCartItems().listen((cartItems) {
-      _items = cartItems;
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    _database.child('carts/${user.uid}/items').onValue.listen((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data != null) {
+        _items = data.map((key, value) => MapEntry(
+              key,
+              CartItem.fromJson(Map<String, dynamic>.from(value)),
+            ));
+      } else {
+        _items = {};
+      }
       notifyListeners();
     });
-  }
-
-  // Generate a Firebase-safe unique ID
-  String _generateCartItemId() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
   Future<void> addItem({
@@ -36,64 +44,61 @@ class CartProvider with ChangeNotifier {
     required int rentDuration,
     required String priceType,
   }) async {
-    try {
-      final cartItem = CartItem(
-        id: _generateCartItemId(),
-        itemId: itemId,
-        name: name,
-        hourlyPrice: hourlyPrice,
-        dailyPrice: dailyPrice,
-        quantity: quantity,
-        imageUrl: imageUrl,
-        rentDuration: rentDuration,
-        priceType: priceType,
-      );
+    final user = _auth.currentUser;
+    if (user == null) return;
 
-      await _cartService.addToCart(cartItem);
-    } catch (e) {
-      rethrow;
-    }
+    final newItemRef = _database.child('carts/${user.uid}/items').push();
+    final cartItem = CartItem(
+      id: newItemRef.key!,
+      itemId: itemId,
+      name: name,
+      hourlyPrice: hourlyPrice,
+      dailyPrice: dailyPrice,
+      quantity: quantity,
+      imageUrl: imageUrl,
+      rentDuration: rentDuration,
+      priceType: priceType,
+    );
+
+    await newItemRef.set(cartItem.toJson());
+    _items[cartItem.id] = cartItem;
+    notifyListeners();
   }
 
   Future<void> removeItem(String itemId) async {
-    try {
-      await _cartService.removeFromCart(itemId);
-    } catch (e) {
-      rethrow;
-    }
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _database.child('carts/${user.uid}/items/$itemId').remove();
+    _items.remove(itemId);
+    notifyListeners();
   }
 
   Future<void> updateQuantity(String itemId, int quantity) async {
-    try {
-      if (_items.containsKey(itemId)) {
-        if (quantity <= 0) {
-          await removeItem(itemId);
-        } else {
-          final updatedItem = CartItem(
-            id: _items[itemId]!.id,
-            itemId: _items[itemId]!.itemId,
-            name: _items[itemId]!.name,
-            hourlyPrice: _items[itemId]!.hourlyPrice,
-            dailyPrice: _items[itemId]!.dailyPrice,
-            quantity: quantity,
-            imageUrl: _items[itemId]!.imageUrl,
-            rentDuration: _items[itemId]!.rentDuration,
-            priceType: _items[itemId]!.priceType,
-          );
-          await _cartService.updateCartItem(updatedItem);
-        }
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    if (_items.containsKey(itemId)) {
+      if (quantity <= 0) {
+        await removeItem(itemId);
+      } else {
+        final updatedItem = _items[itemId]!.copyWith(quantity: quantity);
+        await _database
+            .child('carts/${user.uid}/items/$itemId')
+            .update(updatedItem.toJson());
+        _items[itemId] = updatedItem;
+        notifyListeners();
       }
-    } catch (e) {
-      rethrow;
     }
   }
 
   Future<void> clear() async {
-    try {
-      await _cartService.clearCart();
-    } catch (e) {
-      rethrow;
-    }
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _database.child('carts/${user.uid}/items').remove();
+    _items.clear();
+    notifyListeners();
   }
 
   void initializeCartForUser() {
