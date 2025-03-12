@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:localrental_flutter/widgets/main_navigation.dart';
-import 'package:localrental_flutter/pages/login_page.dart';
-import 'package:localrental_flutter/providers/auth_provider.dart';
-import 'package:localrental_flutter/providers/cart_provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/cart_provider.dart';
+import '../pages/login_page.dart';
+import 'main_navigation.dart';
 
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
 
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<FitnessAuthProvider>(
-      builder: (context, authProvider, _) {
-        return StreamBuilder<User?>(
-          stream: authProvider.authStateChanges,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
+    final authProvider = Provider.of<FitnessAuthProvider>(context);
 
-            if (snapshot.hasData) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.read<CartProvider>().initializeCartForUser();
-              });
-              return const MainNavigation();
-            }
+    // Listen to authentication state changes
+    return FutureBuilder(
+      future: authProvider.autoLogin(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
 
-            return const LoginPage();
-          },
-        );
+        // Check authentication status
+        if (authProvider.isAuthenticated) {
+          // User is authenticated
+          final cartProvider =
+              Provider.of<CartProvider>(context, listen: false);
+
+          // Initialize cart for the authenticated user
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            cartProvider.initializeCartForUser(authProvider.user!.uid);
+          });
+
+          return const MainNavigation();
+        } else {
+          // User is not authenticated
+          return const LoginPage();
+        }
       },
     );
   }

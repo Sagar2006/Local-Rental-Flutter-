@@ -22,6 +22,7 @@ dependencies:
   video_player: ^2.8.2
   http: ^1.2.0
   cached_network_image: ^3.3.1
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:

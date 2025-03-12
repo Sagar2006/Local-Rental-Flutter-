@@ -23,7 +23,7 @@ class CartPage extends StatelessWidget {
       ),
       body: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
-          final cartItems = cartProvider.items.values.toList();
+          final cartItems = cartProvider.items;
 
           if (cartItems.isEmpty) {
             return const Center(
@@ -242,7 +242,7 @@ class CartItemTile extends StatelessWidget {
                           if (item.quantity > 1) {
                             context
                                 .read<CartProvider>()
-                                .updateQuantity(item.id, item.quantity - 1);
+                                .updateItemQuantity(item.id, item.quantity - 1);
                           }
                         },
                       ),
@@ -257,7 +257,7 @@ class CartItemTile extends StatelessWidget {
                         onPressed: () {
                           context
                               .read<CartProvider>()
-                              .updateQuantity(item.id, item.quantity + 1);
+                              .updateItemQuantity(item.id, item.quantity + 1);
                         },
                       ),
                     ],

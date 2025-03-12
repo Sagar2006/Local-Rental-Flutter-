@@ -47,8 +47,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   void _checkIfItemInCart() {
     final cartProvider = context.read<CartProvider>();
     setState(() {
-      _isInCart = cartProvider.items.values
-          .any((item) => item.itemId == widget.item.id);
+      _isInCart =
+          cartProvider.items.any((item) => item.itemId == widget.item.id);
     });
   }
 
@@ -102,6 +102,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
     setState(() => _isLoading = true);
     try {
       await context.read<CartProvider>().addItem(
+            id: widget.item.id,
             itemId: widget.item.id,
             name: widget.item.name,
             hourlyPrice: widget.item.hourlyPrice,

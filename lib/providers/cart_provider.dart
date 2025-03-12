@@ -1,55 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '../models/cart_item.dart';
+import '../services/cart_service.dart';
 
 class CartProvider with ChangeNotifier {
-  final DatabaseReference _database = FirebaseDatabase.instance.ref();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  Map<String, CartItem> _items = {};
+  CartService _cartService;
 
-  Map<String, CartItem> get items => {..._items};
-
-  int get itemCount => _items.length;
-
-  double get totalAmount {
-    return _items.values.fold(0.0, (sum, item) => sum + item.totalPrice);
+  CartProvider(String userId) : _cartService = CartService(userId) {
+    _cartService.addListener(_notifyListeners);
   }
 
-  void initializeCart() {
-    final user = _auth.currentUser;
-    if (user == null) return;
+  List<CartItem> get items => _cartService.items;
+  int get itemCount => _cartService.itemCount;
+  double get totalAmount => _cartService.totalAmount;
 
-    _database.child('carts/${user.uid}/items').onValue.listen((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data != null) {
-        _items = data.map((key, value) => MapEntry(
-              key,
-              CartItem.fromJson(Map<String, dynamic>.from(value)),
-            ));
-      } else {
-        _items = {};
-      }
-      notifyListeners();
-    });
+  // Add this method to fix the undefined method error
+  Future<void> initializeCartForUser(String userId) async {
+    // Remove listener from previous cart service
+    _cartService.removeListener(_notifyListeners);
+
+    // Create new cart service with new user ID
+    _cartService = CartService(userId);
+    _cartService.addListener(_notifyListeners);
+
+    // Load cart items for the new user
+    await _cartService.loadCartItems();
   }
 
   Future<void> addItem({
+    required String id,
     required String itemId,
     required String name,
     double? hourlyPrice,
     double? dailyPrice,
-    required String imageUrl,
     required int quantity,
+    required String imageUrl,
     required int rentDuration,
     required String priceType,
   }) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    final newItemRef = _database.child('carts/${user.uid}/items').push();
     final cartItem = CartItem(
-      id: newItemRef.key!,
+      id: id,
       itemId: itemId,
       name: name,
       hourlyPrice: hourlyPrice,
@@ -60,49 +50,28 @@ class CartProvider with ChangeNotifier {
       priceType: priceType,
     );
 
-    await newItemRef.set(cartItem.toJson());
-    _items[cartItem.id] = cartItem;
+    await _cartService.addItem(cartItem);
+  }
+
+  Future<void> removeItem(String id) async {
+    await _cartService.removeItem(id);
+  }
+
+  Future<void> updateItemQuantity(String id, int quantity) async {
+    await _cartService.updateItemQuantity(id, quantity);
+  }
+
+  Future<void> clearCart() async {
+    await _cartService.clearCart();
+  }
+
+  void _notifyListeners() {
     notifyListeners();
   }
 
-  Future<void> removeItem(String itemId) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    await _database.child('carts/${user.uid}/items/$itemId').remove();
-    _items.remove(itemId);
-    notifyListeners();
-  }
-
-  Future<void> updateQuantity(String itemId, int quantity) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    if (_items.containsKey(itemId)) {
-      if (quantity <= 0) {
-        await removeItem(itemId);
-      } else {
-        final updatedItem = _items[itemId]!.copyWith(quantity: quantity);
-        await _database
-            .child('carts/${user.uid}/items/$itemId')
-            .update(updatedItem.toJson());
-        _items[itemId] = updatedItem;
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<void> clear() async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    await _database.child('carts/${user.uid}/items').remove();
-    _items.clear();
-    notifyListeners();
-  }
-
-  void initializeCartForUser() {
-    _items.clear();
-    initializeCart();
+  @override
+  void dispose() {
+    _cartService.removeListener(_notifyListeners);
+    super.dispose();
   }
 }

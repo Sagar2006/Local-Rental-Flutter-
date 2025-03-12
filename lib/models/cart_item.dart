@@ -22,7 +22,9 @@ class CartItem {
   });
 
   double get totalPrice {
-    return (hourlyPrice ?? dailyPrice ?? 0) * quantity * rentDuration;
+    return (priceType == 'hourly' ? hourlyPrice ?? 0 : dailyPrice ?? 0) *
+        quantity *
+        rentDuration;
   }
 
   Map<String, dynamic> toJson() {
@@ -41,15 +43,19 @@ class CartItem {
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
-      id: json['id'],
-      itemId: json['itemId'],
-      name: json['name'],
-      hourlyPrice: json['hourlyPrice'],
-      dailyPrice: json['dailyPrice'],
-      quantity: json['quantity'],
-      imageUrl: json['imageUrl'],
-      rentDuration: json['rentDuration'],
-      priceType: json['priceType'],
+      id: json['id'] ?? '',
+      itemId: json['itemId'] ?? '',
+      name: json['name'] ?? '',
+      hourlyPrice: json['hourlyPrice'] is num
+          ? (json['hourlyPrice'] as num).toDouble()
+          : null,
+      dailyPrice: json['dailyPrice'] is num
+          ? (json['dailyPrice'] as num).toDouble()
+          : null,
+      quantity: json['quantity'] is int ? json['quantity'] : 1,
+      imageUrl: json['imageUrl'] ?? '',
+      rentDuration: json['rentDuration'] is int ? json['rentDuration'] : 1,
+      priceType: json['priceType'] ?? 'hourly',
     );
   }
 
@@ -77,4 +83,3 @@ class CartItem {
     );
   }
 }
-//test

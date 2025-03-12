@@ -1,85 +1,133 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/cart_item.dart';
 
-class CartService {
-  final DatabaseReference _database = FirebaseDatabase.instance.ref();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class CartService extends ChangeNotifier {
+  final List<CartItem> _items = [];
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
+  final String _userId;
 
-  String? get _userCartPath {
-    final user = _auth.currentUser;
-    if (user == null) return null;
-    return 'carts/${user.uid}/items';
+  List<CartItem> get items => [..._items];
+
+  CartService(this._userId) {
+    loadCartItems();
   }
 
-  Future<void> addToCart(CartItem item) async {
-    final cartPath = _userCartPath;
-    if (cartPath == null) {
-      throw Exception('User not authenticated');
-    }
+  Future<void> loadCartItems() async {
+    // Load from local storage first for instant display
+    await _loadFromLocal();
 
+    // Then sync with Firebase
+    await _syncWithFirebase();
+
+    notifyListeners();
+  }
+
+  Future<void> _loadFromLocal() async {
     try {
-      print('Adding item to cart: ${item.toJson()}');
-      await _database.child(cartPath).child(item.id).set(item.toJson());
+      final prefs = await SharedPreferences.getInstance();
+      final cartData = prefs.getString('cart_items');
+
+      if (cartData != null) {
+        final cartItemsList = jsonDecode(cartData) as List;
+        _items.clear();
+        _items.addAll(
+            cartItemsList.map((item) => CartItem.fromJson(item)).toList());
+      }
     } catch (e) {
-      print('Failed to add item to cart: $e');
-      throw Exception('Failed to add item to cart: $e');
+      print('Error loading from local storage: $e');
     }
   }
 
-  Future<void> removeFromCart(String itemId) async {
-    final cartPath = _userCartPath;
-    if (cartPath == null) {
-      throw Exception('User not authenticated');
-    }
-
+  Future<void> _syncWithFirebase() async {
     try {
-      await _database.child(cartPath).child(itemId).remove();
+      final cartRef = _database.ref().child('carts').child(_userId);
+      final snapshot = await cartRef.once();
+
+      if (snapshot.snapshot.value != null) {
+        final Map<dynamic, dynamic> cartData = Map<dynamic, dynamic>.from(
+            snapshot.snapshot.value as Map<dynamic, dynamic>);
+
+        _items.clear();
+        cartData.forEach((key, value) {
+          final item = CartItem.fromJson(Map<String, dynamic>.from(value));
+          _items.add(item);
+        });
+
+        // Update local storage with the latest data
+        _saveToLocal();
+      }
     } catch (e) {
-      throw Exception('Failed to remove item from cart: $e');
+      print('Error syncing with Firebase: $e');
     }
   }
 
-  Future<void> updateCartItem(CartItem item) async {
-    final cartPath = _userCartPath;
-    if (cartPath == null) {
-      throw Exception('User not authenticated');
+  Future<void> addItem(CartItem item) async {
+    final existingItemIndex = _items.indexWhere(
+        (i) => i.itemId == item.itemId && i.priceType == item.priceType);
+
+    if (existingItemIndex >= 0) {
+      // Update existing item quantity
+      _items[existingItemIndex] = _items[existingItemIndex].copyWith(
+          quantity: _items[existingItemIndex].quantity + item.quantity);
+    } else {
+      _items.add(item);
     }
 
-    try {
-      await _database.child(cartPath).child(item.id).update(item.toJson());
-    } catch (e) {
-      throw Exception('Failed to update cart item: $e');
-    }
+    await _saveToFirebase();
+    await _saveToLocal();
+    notifyListeners();
   }
 
-  Stream<Map<String, CartItem>> getCartItems() {
-    final cartPath = _userCartPath;
-    if (cartPath == null) {
-      return Stream.value({});
+  Future<void> removeItem(String id) async {
+    _items.removeWhere((item) => item.id == id);
+    await _saveToFirebase();
+    await _saveToLocal();
+    notifyListeners();
+  }
+
+  Future<void> updateItemQuantity(String id, int quantity) async {
+    final index = _items.indexWhere((item) => item.id == id);
+    if (index >= 0) {
+      _items[index] = _items[index].copyWith(quantity: quantity);
+      await _saveToFirebase();
+      await _saveToLocal();
+      notifyListeners();
     }
-
-    return _database.child(cartPath).onValue.map((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data == null) return {};
-
-      return data.map((key, value) => MapEntry(
-            key.toString(),
-            CartItem.fromJson(Map<String, dynamic>.from(value)),
-          ));
-    });
   }
 
   Future<void> clearCart() async {
-    final cartPath = _userCartPath;
-    if (cartPath == null) {
-      throw Exception('User not authenticated');
+    _items.clear();
+    await _saveToFirebase();
+    await _saveToLocal();
+    notifyListeners();
+  }
+
+  Future<void> _saveToLocal() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cartItemsJson =
+        jsonEncode(_items.map((item) => item.toJson()).toList());
+    await prefs.setString('cart_items', cartItemsJson);
+  }
+
+  Future<void> _saveToFirebase() async {
+    final cartRef = _database.ref().child('carts').child(_userId);
+    final Map<String, dynamic> cartData = {};
+
+    for (final item in _items) {
+      cartData[item.id] = item.toJson();
     }
 
-    try {
-      await _database.child(cartPath).remove();
-    } catch (e) {
-      throw Exception('Failed to clear cart: $e');
-    }
+    await cartRef.set(cartData);
+  }
+
+  double get totalAmount {
+    return _items.fold(0.0, (sum, item) => sum + item.totalPrice);
+  }
+
+  int get itemCount {
+    return _items.length;
   }
 }
