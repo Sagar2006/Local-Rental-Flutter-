@@ -133,14 +133,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Item added to cart successfully!'),
-          backgroundColor: const Color(0xff92A3FD),
-          action: SnackBarAction(
-            label: 'VIEW CART',
-            textColor: Colors.white,
-            onPressed: () => _navigateToCart(context),
-          ),
+        const SnackBar(
+          content: Text('Item added to cart successfully!'),
+          backgroundColor: Color(0xff92A3FD),
+          duration: Duration(seconds: 2), // Add a 2-second duration
         ),
       );
     } catch (e) {
@@ -150,6 +146,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         SnackBar(
           content: Text('Failed to add item to cart: $e'),
           backgroundColor: Colors.red,
+          duration:
+              const Duration(seconds: 2), // Also add duration for error message
         ),
       );
     }
