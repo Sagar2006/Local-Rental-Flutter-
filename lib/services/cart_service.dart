@@ -26,13 +26,22 @@ class CartService extends ChangeNotifier {
   }
 
   Future<void> loadCartItems() async {
-    // Load from local storage first for instant display
-    await _loadFromLocal();
+    try {
+      // First try to sync with Firebase for the most up-to-date data
+      await _syncWithFirebase();
 
-    // Then sync with Firebase
-    await _syncWithFirebase();
+      // If that fails or as a fallback, load from local storage
+      if (_items.isEmpty) {
+        await _loadFromLocal();
+      }
 
-    notifyListeners();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading cart items: $e');
+      // Fallback to local storage if Firebase sync fails
+      await _loadFromLocal();
+      notifyListeners();
+    }
   }
 
   Future<void> _loadFromLocal() async {

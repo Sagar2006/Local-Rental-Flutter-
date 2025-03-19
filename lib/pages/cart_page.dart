@@ -7,10 +7,38 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
 import 'package:localrental_flutter/pages/item_detail_page.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   final bool isInMainNavigation;
 
   const CartPage({super.key, this.isInMainNavigation = false});
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshCartData();
+  }
+
+  Future<void> _refreshCartData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Refresh the cart data
+    await context.read<CartProvider>().refreshCart();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,34 +48,42 @@ class CartPage extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshCartData,
+          ),
+        ],
       ),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) {
-          final cartItems = cartProvider.items;
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Consumer<CartProvider>(
+              builder: (context, cartProvider, child) {
+                final cartItems = cartProvider.items;
 
-          if (cartItems.isEmpty) {
-            return const Center(
-              child: Text('Your cart is empty'),
-            );
-          }
+                if (cartItems.isEmpty) {
+                  return const Center(
+                    child: Text('Your cart is empty'),
+                  );
+                }
 
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: cartItems.length,
-                  itemBuilder: (context, index) {
-                    final item = cartItems[index];
-                    return CartItemTile(item: item);
-                  },
-                ),
-              ),
-              _buildCheckoutSection(context, cartProvider),
-            ],
-          );
-        },
-      ),
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: cartItems.length,
+                        itemBuilder: (context, index) {
+                          final item = cartItems[index];
+                          return CartItemTile(item: item);
+                        },
+                      ),
+                    ),
+                    _buildCheckoutSection(context, cartProvider),
+                  ],
+                );
+              },
+            ),
     );
   }
 

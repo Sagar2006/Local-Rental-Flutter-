@@ -42,6 +42,11 @@ class CartProvider with ChangeNotifier {
     _cartService.loadCartItems();
   }
 
+  // Add a method to refresh the cart data
+  Future<void> refreshCart() async {
+    await _cartService.loadCartItems();
+  }
+
   double get totalAmount => _cartService.totalAmount;
 
   int get itemCount => _cartService.itemCount;
