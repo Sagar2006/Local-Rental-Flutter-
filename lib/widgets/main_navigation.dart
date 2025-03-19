@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:localrental_flutter/providers/cart_provider.dart';
 import 'package:localrental_flutter/pages/home.dart';
 import 'package:localrental_flutter/pages/add_item_page.dart';
 import 'package:localrental_flutter/pages/cart_page.dart';
@@ -24,7 +26,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(  // Using IndexedStack to preserve state
+      body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
       ),
@@ -32,7 +34,7 @@ class _MainNavigationState extends State<MainNavigation> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
+              color: Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, -3),
@@ -42,6 +44,17 @@ class _MainNavigationState extends State<MainNavigation> {
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) {
+            // Refresh cart data when switching to cart tab
+            if (index == 2) {
+              // Cart tab is typically at index 2
+              _refreshCartData();
+            }
+
+            // If we're already on the cart tab and press it again, refresh
+            if (_selectedIndex == 2 && index == 2) {
+              _refreshCartData();
+            }
+
             setState(() {
               _selectedIndex = index;
             });
@@ -70,5 +83,11 @@ class _MainNavigationState extends State<MainNavigation> {
         ),
       ),
     );
+  }
+
+  // Method to refresh cart data
+  void _refreshCartData() {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.refreshCart();
   }
 }
