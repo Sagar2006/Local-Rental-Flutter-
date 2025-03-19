@@ -25,11 +25,17 @@ class CartItem {
 
   double get totalPrice {
     double price = 0;
-    if (priceType == 'per_day' && dailyPrice != null) {
-      price = dailyPrice! * days;
-    } else if (priceType == 'per_hour' && hourlyPrice != null) {
-      price = hourlyPrice! * hours;
+
+    // Add daily price if applicable
+    if (dailyPrice != null && days > 0) {
+      price += dailyPrice! * days;
     }
+
+    // Add hourly price if applicable
+    if (hourlyPrice != null && hours > 0) {
+      price += hourlyPrice! * hours;
+    }
+
     return price * quantity;
   }
 

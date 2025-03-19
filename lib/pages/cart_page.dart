@@ -464,7 +464,7 @@ class CartItemTile extends StatelessWidget {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (days == 0 && hours == 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -478,17 +478,47 @@ class CartItemTile extends StatelessWidget {
 
                     // Create new item with updated duration
                     final newItem = item.copyWith(days: days, hours: hours);
+                    final cartProvider = context.read<CartProvider>();
 
-                    // First remove old item
-                    context.read<CartProvider>().removeItem(item.id);
+                    try {
+                      // First remove old item
+                      await cartProvider.removeItem(item.id);
 
-                    // Add new item with new id that includes updated duration
-                    context.read<CartProvider>().addItem(newItem.copyWith(
-                          id: '${item.itemId}_${days}_${hours}_${item.quantity}',
-                        ));
+                      // Add new item with new id that includes updated duration
+                      await cartProvider.addItem(newItem.copyWith(
+                        id: '${item.itemId}_${days}_${hours}_${item.quantity}',
+                      ));
 
-                    onUpdateQuantity();
-                    Navigator.of(context).pop();
+                      // Explicitly refresh the cart to ensure updated data is displayed
+                      await cartProvider.refreshCart();
+
+                      // Call the callback to update the UI
+                      onUpdateQuantity();
+
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+
+                        // Show confirmation message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Duration updated successfully'),
+                            backgroundColor: Color(0xff92A3FD),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      // Show error message if something went wrong
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error updating duration: $e'),
+                            backgroundColor: Colors.red,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: const Text('Save'),
                 ),

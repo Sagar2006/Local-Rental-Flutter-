@@ -147,7 +147,22 @@ class CartService extends ChangeNotifier {
   }
 
   double get totalAmount {
-    return _items.fold(0.0, (sum, item) => sum + item.totalPrice);
+    return _items.fold(0.0, (sum, item) {
+      double itemTotal = 0.0;
+
+      // Add daily price total if applicable
+      if (item.dailyPrice != null && item.days > 0) {
+        itemTotal += item.dailyPrice! * item.days;
+      }
+
+      // Add hourly price total if applicable
+      if (item.hourlyPrice != null && item.hours > 0) {
+        itemTotal += item.hourlyPrice! * item.hours;
+      }
+
+      // Multiply by quantity
+      return sum + (itemTotal * item.quantity);
+    });
   }
 
   int get itemCount {
