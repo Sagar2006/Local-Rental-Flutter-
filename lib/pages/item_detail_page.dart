@@ -6,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:localrental_flutter/providers/cart_provider.dart';
+import 'package:localrental_flutter/models/cart_item.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final ItemDisplayModel item;
@@ -101,16 +102,26 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Future<void> _addToCart() async {
     setState(() => _isLoading = true);
     try {
-      await context.read<CartProvider>().addItem(
-            id: widget.item.id,
-            itemId: widget.item.id,
-            name: widget.item.name,
-            hourlyPrice: widget.item.hourlyPrice,
-            priceType: widget.item.priceType,
-            imageUrl: widget.item.featuredImageUrl,
-            quantity: 1,
-            rentDuration: 1,
-          );
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
+      // Create a CartItem properly with all required fields
+      final cartItem = CartItem(
+        id: '${widget.item.id}_${widget.item.priceType == 'per_day' ? 'day' : 'hour'}_$_quantity', // Create a unique ID
+        itemId: widget.item.id,
+        name: widget.item.name,
+        imageUrl: widget.item.featuredImageUrl,
+        dailyPrice:
+            widget.item.priceType == 'per_day' ? widget.item.dailyPrice : null,
+        hourlyPrice: widget.item.priceType == 'per_hour'
+            ? widget.item.hourlyPrice
+            : null,
+        priceType: widget.item.priceType,
+        quantity: _quantity,
+        rentDuration: _rentDuration,
+      );
+
+      // Add the item to the cart
+      cartProvider.addItem(cartItem);
 
       if (!mounted) return;
       setState(() {

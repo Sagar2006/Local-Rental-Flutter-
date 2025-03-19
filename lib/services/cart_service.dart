@@ -2,17 +2,27 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/cart_item.dart';
 
 class CartService extends ChangeNotifier {
   final List<CartItem> _items = [];
   final FirebaseDatabase _database = FirebaseDatabase.instance;
-  final String _userId;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<CartItem> get items => [..._items];
 
-  CartService(this._userId) {
+  CartService() {
     loadCartItems();
+  }
+
+  // Get user-specific cart reference
+  DatabaseReference _getCartRef() {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception("User not authenticated");
+    }
+    return _database.ref().child('carts').child(user.uid);
   }
 
   Future<void> loadCartItems() async {
@@ -43,7 +53,7 @@ class CartService extends ChangeNotifier {
 
   Future<void> _syncWithFirebase() async {
     try {
-      final cartRef = _database.ref().child('carts').child(_userId);
+      final cartRef = _getCartRef();
       final snapshot = await cartRef.once();
 
       if (snapshot.snapshot.value != null) {
@@ -100,7 +110,11 @@ class CartService extends ChangeNotifier {
 
   Future<void> clearCart() async {
     _items.clear();
-    await _saveToFirebase();
+    try {
+      await _getCartRef().remove();
+    } catch (e) {
+      print('Error clearing cart: $e');
+    }
     await _saveToLocal();
     notifyListeners();
   }
@@ -113,7 +127,7 @@ class CartService extends ChangeNotifier {
   }
 
   Future<void> _saveToFirebase() async {
-    final cartRef = _database.ref().child('carts').child(_userId);
+    final cartRef = _getCartRef();
     final Map<String, dynamic> cartData = {};
 
     for (final item in _items) {
@@ -129,5 +143,19 @@ class CartService extends ChangeNotifier {
 
   int get itemCount {
     return _items.length;
+  }
+
+  // Get cart items as a stream
+  Stream<List<CartItem>> getCartItems() {
+    return _getCartRef().onValue.map((event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) {
+        return [];
+      }
+
+      return data.entries.map((entry) {
+        return CartItem.fromJson(Map<String, dynamic>.from(entry.value));
+      }).toList();
+    });
   }
 }

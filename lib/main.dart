@@ -10,8 +10,8 @@ import 'package:localrental_flutter/widgets/auth_wrapper.dart';
 import 'package:localrental_flutter/widgets/main_navigation.dart';
 import 'firebase_options.dart';
 import 'package:localrental_flutter/providers/cart_provider.dart';
+import 'package:localrental_flutter/services/cart_service.dart'; // Added import for CartService
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,11 +38,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => FitnessAuthProvider()),
         ChangeNotifierProxyProvider<FitnessAuthProvider, CartProvider>(
-          create: (_) =>
-              CartProvider(FirebaseAuth.instance.currentUser?.uid ?? 'guest'),
+          create: (_) => CartProvider(CartService()),
           update: (_, auth, previousCart) => auth.isAuthenticated
-              ? CartProvider(auth.user!.uid)
-              : CartProvider('guest'),
+              ? CartProvider(CartService())
+              : CartProvider(CartService()),
         ),
       ],
       child: MaterialApp(

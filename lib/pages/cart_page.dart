@@ -242,7 +242,7 @@ class CartItemTile extends StatelessWidget {
                           if (item.quantity > 1) {
                             context
                                 .read<CartProvider>()
-                                .updateItemQuantity(item.id, item.quantity - 1);
+                                .updateQuantity(item.id, item.quantity - 1);
                           }
                         },
                       ),
@@ -257,7 +257,7 @@ class CartItemTile extends StatelessWidget {
                         onPressed: () {
                           context
                               .read<CartProvider>()
-                              .updateItemQuantity(item.id, item.quantity + 1);
+                              .updateQuantity(item.id, item.quantity + 1);
                         },
                       ),
                     ],
