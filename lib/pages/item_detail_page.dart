@@ -20,8 +20,9 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   final Map<String, VideoPlayerController> _controllers = {};
   int _currentMediaIndex = 0;
-  final int _quantity = 1;
-  final int _rentDuration = 1;
+  int _quantity = 1;
+  int _days = 0; // Changed from _rentDuration to _days
+  int _hours = 0; // Added _hours
   bool _isLoading = false;
   final String _selectedFeaturedImage = '';
   bool _isInCart = false;
@@ -102,22 +103,33 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Future<void> _addToCart() async {
     setState(() => _isLoading = true);
     try {
+      // Validate that at least one duration is selected
+      if (_days == 0 && _hours == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a borrowing duration (days or hours)'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        setState(() => _isLoading = false);
+        return;
+      }
+
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
       // Create a CartItem properly with all required fields
       final cartItem = CartItem(
-        id: '${widget.item.id}_${widget.item.priceType == 'per_day' ? 'day' : 'hour'}_$_quantity', // Create a unique ID
+        id: '${widget.item.id}_${_days}_${_hours}_$_quantity', // Include days and hours in ID
         itemId: widget.item.id,
         name: widget.item.name,
         imageUrl: widget.item.featuredImageUrl,
-        dailyPrice:
-            widget.item.priceType == 'per_day' ? widget.item.dailyPrice : null,
-        hourlyPrice: widget.item.priceType == 'per_hour'
-            ? widget.item.hourlyPrice
-            : null,
+        dailyPrice: widget.item.dailyPrice,
+        hourlyPrice: widget.item.hourlyPrice,
         priceType: widget.item.priceType,
         quantity: _quantity,
-        rentDuration: _rentDuration,
+        days: _days,
+        hours: _hours,
       );
 
       // Add the item to the cart
@@ -263,6 +275,142 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               }).toList(),
             ),
             const SizedBox(height: 24),
+            // Duration selection UI
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+            const Text(
+              'Borrowing Duration:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Days',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove, size: 16),
+                              onPressed: () {
+                                setState(() {
+                                  if (_days > 0) _days--;
+                                });
+                              },
+                            ),
+                            Text(
+                              '$_days',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add, size: 16),
+                              onPressed: () {
+                                setState(() {
+                                  _days++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Hours',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove, size: 16),
+                              onPressed: () {
+                                setState(() {
+                                  if (_hours > 0) _hours--;
+                                });
+                              },
+                            ),
+                            Text(
+                              '$_hours',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add, size: 16),
+                              onPressed: () {
+                                setState(() {
+                                  _hours++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Show pricing preview based on selected duration
+            const SizedBox(height: 16),
+            if (_days > 0 && widget.item.dailyPrice != null)
+              Text(
+                'Days cost: \$${(widget.item.dailyPrice! * _days).toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Color(0xff92A3FD),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            if (_hours > 0 && widget.item.hourlyPrice != null)
+              Text(
+                'Hours cost: \$${(widget.item.hourlyPrice! * _hours).toStringAsFixed(2)}',
+                style: const TextStyle(
+                  color: Color(0xff92A3FD),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            if ((_days > 0 && widget.item.dailyPrice != null) ||
+                (_hours > 0 && widget.item.hourlyPrice != null))
+              Text(
+                'Total: \$${((_days > 0 ? widget.item.dailyPrice! * _days : 0) + (_hours > 0 ? widget.item.hourlyPrice! * _hours : 0)).toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Color(0xff92A3FD),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+            const SizedBox(height: 24),
+
             // Only show Add to Cart button if not in cart
             if (!_isInCart)
               Column(

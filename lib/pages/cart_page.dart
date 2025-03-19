@@ -267,15 +267,41 @@ class CartItemTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '${item.priceType == 'per_day' ? 'Days' : 'Hours'}: ${item.rentDuration}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+
+                  // Display days and hours
+                  Row(
+                    children: [
+                      if (item.days > 0)
+                        Text(
+                          'Days: ${item.days}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      if (item.days > 0 && item.hours > 0)
+                        Text(
+                          ' | ',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                      if (item.hours > 0)
+                        Text(
+                          'Hours: ${item.hours}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: 4),
+
+                  // Display price
                   Text(
-                    '\$${((item.hourlyPrice ?? item.dailyPrice ?? 0) * item.quantity * item.rentDuration).toStringAsFixed(2)}',
+                    '\$${((item.days > 0 ? (item.dailyPrice ?? 0) * item.days : 0) + (item.hours > 0 ? (item.hourlyPrice ?? 0) * item.hours : 0)) * item.quantity}',
                     style: const TextStyle(
                       color: Color(0xff92A3FD),
                       fontWeight: FontWeight.bold,
@@ -332,11 +358,145 @@ class CartItemTile extends StatelessWidget {
                     ],
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.edit_calendar_outlined),
+                  onPressed: () {
+                    _showDurationEditDialog(context, item);
+                  },
+                  color: Colors.blue,
+                ),
               ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // Dialog to edit duration
+  void _showDurationEditDialog(BuildContext context, CartItem item) {
+    int days = item.days;
+    int hours = item.hours;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Duration'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Days selector
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Days:'),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: () {
+                              if (days > 0) {
+                                setState(() => days--);
+                              }
+                            },
+                          ),
+                          Text('$days'),
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: () {
+                              setState(() => days++);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  // Hours selector
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Hours:'),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: () {
+                              if (hours > 0) {
+                                setState(() => hours--);
+                              }
+                            },
+                          ),
+                          Text('$hours'),
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: () {
+                              setState(() => hours++);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  // Price preview
+                  const SizedBox(height: 16),
+                  if (days > 0 && item.dailyPrice != null)
+                    Text(
+                        'Days cost: \$${(item.dailyPrice! * days).toStringAsFixed(2)}'),
+                  if (hours > 0 && item.hourlyPrice != null)
+                    Text(
+                        'Hours cost: \$${(item.hourlyPrice! * hours).toStringAsFixed(2)}'),
+                  if ((days > 0 && item.dailyPrice != null) ||
+                      (hours > 0 && item.hourlyPrice != null))
+                    Text(
+                      'Total: \$${((days > 0 ? item.dailyPrice! * days : 0) + (hours > 0 ? item.hourlyPrice! * hours : 0)).toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (days == 0 && hours == 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select at least some duration'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Create new item with updated duration
+                    final newItem = item.copyWith(days: days, hours: hours);
+
+                    // First remove old item
+                    context.read<CartProvider>().removeItem(item.id);
+
+                    // Add new item with new id that includes updated duration
+                    context.read<CartProvider>().addItem(newItem.copyWith(
+                          id: '${item.itemId}_${days}_${hours}_${item.quantity}',
+                        ));
+
+                    onUpdateQuantity();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }
