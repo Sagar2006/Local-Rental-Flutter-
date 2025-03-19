@@ -16,13 +16,35 @@ class CartPage extends StatefulWidget {
   State<CartPage> createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> {
+class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _refreshCartData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh when dependencies change (like when returning to this screen)
+    _refreshCartData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh when app comes to foreground
+    if (state == AppLifecycleState.resumed) {
+      _refreshCartData();
+    }
   }
 
   Future<void> _refreshCartData() async {
@@ -75,7 +97,11 @@ class _CartPageState extends State<CartPage> {
                         itemCount: cartItems.length,
                         itemBuilder: (context, index) {
                           final item = cartItems[index];
-                          return CartItemTile(item: item);
+                          return CartItemTile(
+                            item: item,
+                            onRemove: () => _refreshCartData(),
+                            onUpdateQuantity: () => _refreshCartData(),
+                          );
                         },
                       ),
                     ),
@@ -156,10 +182,14 @@ class _CartPageState extends State<CartPage> {
 
 class CartItemTile extends StatelessWidget {
   final CartItem item;
+  final VoidCallback onRemove;
+  final VoidCallback onUpdateQuantity;
 
   const CartItemTile({
     super.key,
     required this.item,
+    required this.onRemove,
+    required this.onUpdateQuantity,
   });
 
   @override
@@ -259,8 +289,9 @@ class CartItemTile extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
-                  onPressed: () {
-                    context.read<CartProvider>().removeItem(item.id);
+                  onPressed: () async {
+                    await context.read<CartProvider>().removeItem(item.id);
+                    onRemove(); // Call the callback to refresh cart
                   },
                   color: Colors.red,
                 ),
@@ -274,11 +305,12 @@ class CartItemTile extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.remove, size: 16),
-                        onPressed: () {
+                        onPressed: () async {
                           if (item.quantity > 1) {
-                            context
+                            await context
                                 .read<CartProvider>()
                                 .updateQuantity(item.id, item.quantity - 1);
+                            onUpdateQuantity(); // Call the callback to refresh cart
                           }
                         },
                       ),
@@ -290,10 +322,11 @@ class CartItemTile extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.add, size: 16),
-                        onPressed: () {
-                          context
+                        onPressed: () async {
+                          await context
                               .read<CartProvider>()
                               .updateQuantity(item.id, item.quantity + 1);
+                          onUpdateQuantity(); // Call the callback to refresh cart
                         },
                       ),
                     ],

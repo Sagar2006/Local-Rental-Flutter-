@@ -13,29 +13,36 @@ class CartProvider with ChangeNotifier {
 
   List<CartItem> get items => _cartService.items;
 
-  void addItem(CartItem item) {
-    _cartService.addItem(item);
+  Future<void> addItem(CartItem item) async {
+    await _cartService.addItem(item);
+    // Refresh after adding
+    notifyListeners();
   }
 
-  void removeItem(String id) {
-    _cartService.removeItem(id);
+  Future<void> removeItem(String id) async {
+    await _cartService.removeItem(id);
+    // Refresh after removing
+    notifyListeners();
   }
 
-  void clearCart() {
-    // Remove the argument
-    _cartService.clearCart();
+  Future<void> clearCart() async {
+    await _cartService.clearCart();
+    // Refresh after clearing
+    notifyListeners();
   }
 
-  void updateQuantity(String id, int quantity) {
-    _cartService.updateItemQuantity(id, quantity);
+  Future<void> updateQuantity(String id, int quantity) async {
+    await _cartService.updateItemQuantity(id, quantity);
+    // Refresh after updating quantity
+    notifyListeners();
   }
 
-  // Add this method as an alias to updateQuantity for consistency
-  void updateItemQuantity(String id, int quantity) {
-    _cartService.updateItemQuantity(id, quantity);
+  // Update this method as alias to also return a Future
+  Future<void> updateItemQuantity(String id, int quantity) async {
+    await _cartService.updateItemQuantity(id, quantity);
+    notifyListeners();
   }
 
-  // Add the missing initializeCartForUser method
   void initializeCartForUser(String userId) {
     // Since CartService now handles user IDs internally through Firebase Auth,
     // we just need to reload the cart items

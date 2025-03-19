@@ -15,6 +15,7 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
+  final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
     const HomePage(),
@@ -23,71 +24,76 @@ class _MainNavigationState extends State<MainNavigation> {
     const ProfilePage(),
   ];
 
+  void setSelectedIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _refreshCartIfNeeded(index);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, -3),
-            ),
-          ],
+    // Provide the navigation state to allow other widgets to navigate
+    return Provider.value(
+      value: this,
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            // Refresh cart data when switching to cart tab
-            if (index == 2) {
-              // Cart tab is typically at index 2
-              _refreshCartData();
-            }
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, -3),
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
 
-            // If we're already on the cart tab and press it again, refresh
-            if (_selectedIndex == 2 && index == 2) {
-              _refreshCartData();
-            }
-
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xff92A3FD),
-          unselectedItemColor: Colors.grey,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline),
-              label: 'Add Item',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
+              _refreshCartIfNeeded(index);
+            },
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: const Color(0xff92A3FD),
+            unselectedItemColor: Colors.grey,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add_circle_outline),
+                label: 'Add Item',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart),
+                label: 'Cart',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Method to refresh cart data
-  void _refreshCartData() {
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    cartProvider.refreshCart();
+  // Method to refresh cart data if needed
+  void _refreshCartIfNeeded(int index) {
+    // Always refresh when switching to cart tab (index 2)
+    if (index == 2) {
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      cartProvider.refreshCart();
+    }
   }
 }

@@ -121,7 +121,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       );
 
       // Add the item to the cart
-      cartProvider.addItem(cartItem);
+      await cartProvider.addItem(cartItem);
+
+      // Explicitly refresh the cart data after adding an item
+      await cartProvider.refreshCart();
 
       if (!mounted) return;
       setState(() {
@@ -130,9 +133,14 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Item added to cart successfully!'),
-          backgroundColor: Color(0xff92A3FD),
+        SnackBar(
+          content: const Text('Item added to cart successfully!'),
+          backgroundColor: const Color(0xff92A3FD),
+          action: SnackBarAction(
+            label: 'VIEW CART',
+            textColor: Colors.white,
+            onPressed: () => _navigateToCart(context),
+          ),
         ),
       );
     } catch (e) {
@@ -145,6 +153,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         ),
       );
     }
+  }
+
+  // Updated method to navigate to cart
+  void _navigateToCart(BuildContext context) {
+    // Pop back to the first route (likely the MainNavigation)
+    Navigator.of(context).popUntil((route) => route.isFirst);
+
+    // Navigate to the cart page
+    Navigator.of(context).pushNamed('/cart');
   }
 
   @override
