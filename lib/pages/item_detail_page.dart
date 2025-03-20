@@ -212,6 +212,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final isOwner = widget.item.userId == currentUser?.uid;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Item Details'),
@@ -219,7 +222,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
-          if (_isOwner)
+          if (isOwner)
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: _navigateToEditPage,
@@ -319,188 +322,191 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-            const Text(
-              'Borrowing Duration:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Days',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  if (_days > 0) _days--;
-                                });
-                              },
-                            ),
-                            Text(
-                              '$_days',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  _days++;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Hours',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  if (_hours > 0) _hours--;
-                                });
-                              },
-                            ),
-                            Text(
-                              '$_hours',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.add, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  _hours++;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_days > 0 && widget.item.dailyPrice != null)
-              Text(
-                'Days cost: \$${(widget.item.dailyPrice! * _days).toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: Color(0xff92A3FD),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            if (_hours > 0 && widget.item.hourlyPrice != null)
-              Text(
-                'Hours cost: \$${(widget.item.hourlyPrice! * _hours).toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: Color(0xff92A3FD),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            if ((_days > 0 && widget.item.dailyPrice != null) ||
-                (_hours > 0 && widget.item.hourlyPrice != null))
-              Text(
-                'Total: \$${((_days > 0 ? widget.item.dailyPrice! * _days : 0) + (_hours > 0 ? widget.item.hourlyPrice! * _hours : 0)).toStringAsFixed(2)}',
-                style: const TextStyle(
+            if (!isOwner) ...[
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 16),
+              const Text(
+                'Borrowing Duration:',
+                style: TextStyle(
                   fontSize: 18,
-                  color: Color(0xff92A3FD),
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            const SizedBox(height: 24),
-            if (!_isInCart)
-              Column(
+              const SizedBox(height: 16),
+              Row(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : () => _addToCart(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xff92A3FD),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Add to Cart',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Days',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove, size: 16),
+                                onPressed: () {
+                                  setState(() {
+                                    if (_days > 0) _days--;
+                                  });
+                                },
                               ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 50),
-                ],
-              )
-            else
-              Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Item Already in Cart',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                              Text(
+                                '$_days',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add, size: 16),
+                                onPressed: () {
+                                  setState(() {
+                                    _days++;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Hours',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove, size: 16),
+                                onPressed: () {
+                                  setState(() {
+                                    if (_hours > 0) _hours--;
+                                  });
+                                },
+                              ),
+                              Text(
+                                '$_hours',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.add, size: 16),
+                                onPressed: () {
+                                  setState(() {
+                                    _hours++;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
+              const SizedBox(height: 16),
+              if (_days > 0 && widget.item.dailyPrice != null)
+                Text(
+                  'Days cost: \$${(widget.item.dailyPrice! * _days).toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Color(0xff92A3FD),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              if (_hours > 0 && widget.item.hourlyPrice != null)
+                Text(
+                  'Hours cost: \$${(widget.item.hourlyPrice! * _hours).toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Color(0xff92A3FD),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              if ((_days > 0 && widget.item.dailyPrice != null) ||
+                  (_hours > 0 && widget.item.hourlyPrice != null))
+                Text(
+                  'Total: \$${((_days > 0 ? widget.item.dailyPrice! * _days : 0) + (_hours > 0 ? widget.item.hourlyPrice! * _hours : 0)).toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Color(0xff92A3FD),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              const SizedBox(height: 24),
+              if (!_isInCart)
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : () => _addToCart(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff92A3FD),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Text(
+                                'Add to Cart',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                )
+              else
+                Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Item Already in Cart',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                  ],
+                ),
+            ],
           ],
         ),
       ),

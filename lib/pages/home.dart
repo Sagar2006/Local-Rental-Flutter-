@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:localrental_flutter/widgets/auth_wrapper.dart';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -202,12 +203,15 @@ class _HomePageState extends State<HomePage> {
           child: Text(_error, style: const TextStyle(color: Colors.red)));
     }
 
-    final filteredItems =
-        _selectedCategory != null && _selectedCategory != 'All'
-            ? _items
-                .where((item) => item.categories.contains(_selectedCategory))
-                .toList()
-            : _items;
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    // Filter out items added by the current user
+    final filteredItems = _items.where((item) {
+      return item.userId != currentUser?.uid &&
+          (_selectedCategory == null ||
+              _selectedCategory == 'All' ||
+              item.categories.contains(_selectedCategory));
+    }).toList();
 
     if (filteredItems.isEmpty) {
       return Center(

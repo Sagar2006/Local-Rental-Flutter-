@@ -21,7 +21,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomePage(),
     const AddItemPage(),
     const CartPage(isInMainNavigation: true),
-    const ProfilePage(),
+    const ProfilePage(), // Updated to include ProfilePage
   ];
 
   void setSelectedIndex(int index) {
