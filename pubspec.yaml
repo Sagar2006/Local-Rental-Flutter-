@@ -23,7 +23,7 @@ dependencies:
   http: ^1.2.0
   cached_network_image: ^3.3.1
   shared_preferences: ^2.2.0
-  firebase_storage: ^11.2.6
+  firebase_storage: ^12.4.1
   flutter_tags_x: ^1.1.0
 
 dev_dependencies:
