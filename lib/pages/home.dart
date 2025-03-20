@@ -115,8 +115,9 @@ class _HomePageState extends State<HomePage> {
 
           final data = snapshot.value as Map<dynamic, dynamic>;
           data.forEach((key, value) {
+            final itemData = Map<String, dynamic>.from(value);
             items.add(ItemDisplayModel.fromJson(
-              Map<String, dynamic>.from(value),
+              itemData,
               boxColor: _alternatingColors[colorIndex % 2],
             ));
             colorIndex++;
@@ -170,8 +171,9 @@ class _HomePageState extends State<HomePage> {
 
       final data = snapshot.value as Map<dynamic, dynamic>;
       data.forEach((key, value) {
+        final itemData = Map<String, dynamic>.from(value);
         items.add(ItemDisplayModel.fromJson(
-          Map<String, dynamic>.from(value),
+          itemData,
           boxColor: _alternatingColors[colorIndex % 2],
         ));
         colorIndex++;
@@ -251,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: filteredItems[index].boxColor.withAlpha(77.toInt()),
+                    color: filteredItems[index].boxColor.withAlpha(77),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -269,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withAlpha(0.2.toInt()),
+                              color: Colors.grey.withAlpha(20),
                               spreadRadius: 1,
                               blurRadius: 5,
                               offset: const Offset(0, 3),
@@ -374,7 +376,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff1D1617).withAlpha(0.11.toInt()),
+            color: const Color(0xff1D1617).withAlpha(11),
             blurRadius: 40,
             spreadRadius: 0.0,
           )
@@ -436,7 +438,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? categories[index].color
-                        : categories[index].color.withAlpha(77.toInt()),
+                        : categories[index].color.withAlpha(77),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -447,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                         height: 50,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white.withAlpha(0.8.toInt())
+                              ? Colors.white.withAlpha(204)
                               : Colors.white,
                           shape: BoxShape.circle,
                         ),

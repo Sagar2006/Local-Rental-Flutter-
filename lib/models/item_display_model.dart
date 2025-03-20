@@ -42,19 +42,19 @@ class ItemDisplayModel {
   factory ItemDisplayModel.fromJson(Map<String, dynamic> json,
       {Color boxColor = Colors.blue}) {
     return ItemDisplayModel(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
       dailyPrice: json['dailyPrice']?.toDouble(),
       hourlyPrice: json['hourlyPrice']?.toDouble(),
-      priceType: json['priceType'],
+      priceType: json['priceType'] ?? '',
       tags: List<String>.from(json['tags'] ?? []),
       mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
       isVideo: List<bool>.from(json['isVideo'] ?? []),
-      featuredImageUrl: json['featuredImageUrl'],
-      userId: json['userId'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'] ?? json['createdAt'],
+      featuredImageUrl: json['featuredImageUrl'] ?? '',
+      userId: json['userId'] ?? '',
+      createdAt: json['createdAt'] ?? 0,
+      updatedAt: json['updatedAt'] ?? json['createdAt'] ?? 0,
       boxColor: boxColor, // Use the provided boxColor
       categories: List<String>.from(
           json['tags'] ?? []), // Use tags as categories for filtering
