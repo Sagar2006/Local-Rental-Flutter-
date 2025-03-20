@@ -251,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: filteredItems[index].boxColor.withAlpha(77),
+                    color: filteredItems[index].boxColor.withAlpha(77.toInt()),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -269,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withValues(alpha: 0.2),
+                              color: Colors.grey.withAlpha(0.2.toInt()),
                               spreadRadius: 1,
                               blurRadius: 5,
                               offset: const Offset(0, 3),
@@ -374,7 +374,7 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff1D1617).withValues(alpha: 0.11),
+            color: const Color(0xff1D1617).withAlpha(0.11.toInt()),
             blurRadius: 40,
             spreadRadius: 0.0,
           )
@@ -436,7 +436,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? categories[index].color
-                        : categories[index].color.withAlpha(77),
+                        : categories[index].color.withAlpha(77.toInt()),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -447,7 +447,7 @@ class _HomePageState extends State<HomePage> {
                         height: 50,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.white.withValues(alpha: 0.8)
+                              ? Colors.white.withAlpha(0.8.toInt())
                               : Colors.white,
                           shape: BoxShape.circle,
                         ),
@@ -550,6 +550,61 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CategoryBox extends StatelessWidget {
+  final String title;
+  final String svgAsset;
+  final VoidCallback onTap;
+  final Color boxColor; // Add this parameter definition
+
+  const CategoryBox({
+    Key? key,
+    required this.title,
+    required this.svgAsset,
+    required this.onTap,
+    this.boxColor = Colors.white, // Provide a default value
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          color: boxColor,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white
+                    .withOpacity(1.0), // Use withOpacity instead of withAlpha
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SvgPicture.asset(svgAsset),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                color: boxColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

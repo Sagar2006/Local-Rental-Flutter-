@@ -4,55 +4,80 @@ class ItemDisplayModel {
   final String id;
   final String name;
   final String description;
-  final double? hourlyPrice;
   final double? dailyPrice;
+  final double? hourlyPrice;
+  final String priceType;
   final List<String> tags;
-  final String userId;
-  final Color boxColor;
-  final int quantity;
   final List<String> mediaUrls;
   final List<bool> isVideo;
   final String featuredImageUrl;
-  final List<String> categories;
-  bool viewIsSelected;
+  final String userId;
+  final int createdAt;
+  final int updatedAt;
+  final Color boxColor; // Add this property
+  final List<String> categories; // Add this property for category filtering
 
   ItemDisplayModel({
     required this.id,
     required this.name,
     required this.description,
-    this.hourlyPrice,
     this.dailyPrice,
+    this.hourlyPrice,
+    required this.priceType,
     required this.tags,
-    required this.userId,
-    required this.boxColor,
-    required this.quantity,
     required this.mediaUrls,
     required this.isVideo,
     required this.featuredImageUrl,
-    required this.categories,
-    this.viewIsSelected = false,
+    required this.userId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.boxColor = Colors.blue, // Default color
+    this.categories = const [], // Default empty list
   });
 
-  double get price => hourlyPrice ?? dailyPrice ?? 0.0;
-  String get priceType => hourlyPrice != null ? 'per_hour' : 'per_day';
+  // Calculate the price based on price type
+  double get price =>
+      priceType == 'per_day' ? (dailyPrice ?? 0.0) : (hourlyPrice ?? 0.0);
 
   factory ItemDisplayModel.fromJson(Map<String, dynamic> json,
-      {Color? boxColor}) {
+      {Color boxColor = Colors.blue}) {
     return ItemDisplayModel(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      description: json['description'] ?? '',
-      hourlyPrice: json['hourlyPrice']?.toDouble(),
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
       dailyPrice: json['dailyPrice']?.toDouble(),
+      hourlyPrice: json['hourlyPrice']?.toDouble(),
+      priceType: json['priceType'],
       tags: List<String>.from(json['tags'] ?? []),
-      userId: json['userId'] ?? '',
-      boxColor: boxColor ?? const Color(0xff9DCEFF),
-      quantity: json['quantity'] ?? 0,
       mediaUrls: List<String>.from(json['mediaUrls'] ?? []),
       isVideo: List<bool>.from(json['isVideo'] ?? []),
-      featuredImageUrl: json['featuredImageUrl'] ?? '',
-      categories: List<String>.from(json['categories'] ?? []),
-      viewIsSelected: false,
+      featuredImageUrl: json['featuredImageUrl'],
+      userId: json['userId'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'] ?? json['createdAt'],
+      boxColor: boxColor, // Use the provided boxColor
+      categories: List<String>.from(
+          json['tags'] ?? []), // Use tags as categories for filtering
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'dailyPrice': dailyPrice,
+      'hourlyPrice': hourlyPrice,
+      'priceType': priceType,
+      'tags': tags,
+      'mediaUrls': mediaUrls,
+      'isVideo': isVideo,
+      'featuredImageUrl': featuredImageUrl,
+      'userId': userId,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'boxColor': boxColor, // Add this property
+      'categories': categories, // Add this property
+    };
   }
 }

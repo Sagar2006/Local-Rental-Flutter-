@@ -7,6 +7,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:localrental_flutter/providers/cart_provider.dart';
 import 'package:localrental_flutter/models/cart_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:localrental_flutter/pages/edit_item_page.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final ItemDisplayModel item;
@@ -20,18 +23,20 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   final Map<String, VideoPlayerController> _controllers = {};
   int _currentMediaIndex = 0;
-  int _quantity = 1;
+  final int _quantity = 1;
   int _days = 0; // Changed from _rentDuration to _days
   int _hours = 0; // Added _hours
   bool _isLoading = false;
   final String _selectedFeaturedImage = '';
   bool _isInCart = false;
+  bool _isOwner = false;
 
   @override
   void initState() {
     super.initState();
     _initializeVideoControllers();
     _checkIfItemInCart();
+    _checkIfUserIsOwner();
   }
 
   Future<void> _initializeVideoControllers() async {
@@ -52,6 +57,45 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       _isInCart =
           cartProvider.items.any((item) => item.itemId == widget.item.id);
     });
+  }
+
+  void _checkIfUserIsOwner() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null && widget.item.userId == currentUser.uid) {
+      setState(() {
+        _isOwner = true;
+      });
+    }
+  }
+
+  void _navigateToEditPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditItemPage(item: widget.item),
+      ),
+    );
+
+    if (result == true) {
+      final databaseRef = FirebaseDatabase.instance.ref();
+      final snapshot = await databaseRef.child('items/${widget.item.id}').get();
+
+      if (!snapshot.exists || !mounted) return;
+
+      final itemData = snapshot.value as Map<dynamic, dynamic>;
+      final updatedItem = ItemDisplayModel.fromJson(
+        Map<String, dynamic>.from(itemData),
+      );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ItemDetailPage(item: updatedItem),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -103,7 +147,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Future<void> _addToCart() async {
     setState(() => _isLoading = true);
     try {
-      // Validate that at least one duration is selected
       if (_days == 0 && _hours == 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -118,9 +161,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
 
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
-      // Create a CartItem properly with all required fields
       final cartItem = CartItem(
-        id: '${widget.item.id}_${_days}_${_hours}_$_quantity', // Include days and hours in ID
+        id: '${widget.item.id}_${_days}_${_hours}_$_quantity',
         itemId: widget.item.id,
         name: widget.item.name,
         imageUrl: widget.item.featuredImageUrl,
@@ -132,10 +174,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         hours: _hours,
       );
 
-      // Add the item to the cart
       await cartProvider.addItem(cartItem);
 
-      // Explicitly refresh the cart data after adding an item
       await cartProvider.refreshCart();
 
       if (!mounted) return;
@@ -148,7 +188,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         const SnackBar(
           content: Text('Item added to cart successfully!'),
           backgroundColor: Color(0xff92A3FD),
-          duration: Duration(seconds: 2), // Add a 2-second duration
+          duration: Duration(seconds: 2),
         ),
       );
     } catch (e) {
@@ -158,19 +198,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         SnackBar(
           content: Text('Failed to add item to cart: $e'),
           backgroundColor: Colors.red,
-          duration:
-              const Duration(seconds: 2), // Also add duration for error message
+          duration: const Duration(seconds: 2),
         ),
       );
     }
   }
 
-  // Updated method to navigate to cart
   void _navigateToCart(BuildContext context) {
-    // Pop back to the first route (likely the MainNavigation)
     Navigator.of(context).popUntil((route) => route.isFirst);
 
-    // Navigate to the cart page
     Navigator.of(context).pushNamed('/cart');
   }
 
@@ -182,6 +218,14 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          if (_isOwner)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: _navigateToEditPage,
+              tooltip: 'Edit Item',
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -275,7 +319,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-            // Duration selection UI
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
@@ -287,7 +330,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               ),
             ),
             const SizedBox(height: 16),
-
             Row(
               children: [
                 Expanded(
@@ -379,8 +421,6 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                 ),
               ],
             ),
-
-            // Show pricing preview based on selected duration
             const SizedBox(height: 16),
             if (_days > 0 && widget.item.dailyPrice != null)
               Text(
@@ -408,10 +448,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
             const SizedBox(height: 24),
-
-            // Only show Add to Cart button if not in cart
             if (!_isInCart)
               Column(
                 children: [
@@ -437,7 +474,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                             ),
                     ),
                   ),
-                  const SizedBox(height: 50), // Added more bottom padding
+                  const SizedBox(height: 50),
                 ],
               )
             else
@@ -461,7 +498,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 50), // Added more bottom padding
+                  const SizedBox(height: 50),
                 ],
               ),
           ],
