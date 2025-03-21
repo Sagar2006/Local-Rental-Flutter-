@@ -343,7 +343,7 @@ class CartItemTile extends StatelessWidget {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: theme.cardColor, // Adapt to theme
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -359,11 +359,13 @@ class CartItemTile extends StatelessWidget {
                             onUpdateQuantity(); // Call the callback to refresh cart
                           }
                         },
+                        color: theme.textTheme.bodyLarge?.color, // Updated
                       ),
                       Text(
                         '${item.quantity}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          color: theme.textTheme.bodyLarge?.color, // Updated
                         ),
                       ),
                       IconButton(
@@ -374,6 +376,7 @@ class CartItemTile extends StatelessWidget {
                               .updateQuantity(item.id, item.quantity + 1);
                           onUpdateQuantity(); // Call the callback to refresh cart
                         },
+                        color: theme.textTheme.bodyLarge?.color, // Updated
                       ),
                     ],
                   ),

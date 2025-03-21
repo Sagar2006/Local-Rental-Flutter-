@@ -92,14 +92,14 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 8.0, bottom: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
                   child: Text(
                     'Account',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black54,
+                      color: theme.textTheme.bodyLarge?.color, // Updated
                     ),
                   ),
                 ),
