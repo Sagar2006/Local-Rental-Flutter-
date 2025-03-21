@@ -262,22 +262,20 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? filteredItems[index].boxColor
-                        : theme.brightness == Brightness.dark
-                            ? const Color(0xFF2D2D2D) // Dark mode color
-                            : filteredItems[index]
-                                .boxColor
-                                .withAlpha(77), // Light mode color
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF2D2D2D) // Dark mode color
+                        : filteredItems[index]
+                            .boxColor
+                            .withAlpha(77), // Match category tiles opacity
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: theme.brightness == Brightness.dark
                             ? Colors.black26
-                            : Colors.grey.withOpacity(0.3), // Subtle shadow
-                        spreadRadius: 2,
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
+                            : Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                     border: Border.all(

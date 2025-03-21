@@ -16,6 +16,7 @@ import 'package:localrental_flutter/pages/edit_item_page.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
 import 'package:localrental_flutter/providers/theme_provider.dart';
 import 'package:localrental_flutter/pages/settings_page.dart'; // Add this import
+import 'package:localrental_flutter/providers/user_provider.dart'; // Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
               : CartProvider(CartService()),
         ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
