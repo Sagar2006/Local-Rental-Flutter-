@@ -261,7 +261,9 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: filteredItems[index].boxColor.withAlpha(77),
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF2D2D2D) // Lighter dark color
+                        : const Color(0xFFF5F5F5), // Light color for light mode
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -315,16 +317,16 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             filteredItems[index].name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: theme.textTheme.bodyLarge?.color,
                               fontSize: 16,
                             ),
                           ),
                           Text(
                             filteredItems[index].description,
-                            style: const TextStyle(
-                              color: Color(0xff7B6F72),
+                            style: TextStyle(
+                              color: theme.textTheme.bodyMedium?.color,
                               fontSize: 12,
                             ),
                             maxLines: 2,
@@ -334,8 +336,8 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 8),
                           Text(
                             '\$${filteredItems[index].price} ${filteredItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
-                            style: const TextStyle(
-                              color: Colors.black,
+                            style: TextStyle(
+                              color: theme.textTheme.bodyLarge?.color,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),

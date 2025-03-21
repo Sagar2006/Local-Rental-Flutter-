@@ -310,252 +310,261 @@ class _AddItemPageState extends State<AddItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (_) {
-        _resetForm();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Add Item'),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-          elevation: 0,
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Add Item',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Name Field
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Item Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.inventory),
+        centerTitle: true, // Center the title
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Name Field
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Item Name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter item name';
-                        }
-                        return null;
-                      },
+                      prefixIcon: const Icon(Icons.inventory),
                     ),
-                    const SizedBox(height: 16),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter item name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Description Field
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Description',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.description),
+                  // Description Field
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      maxLines: 3,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter item description';
-                        }
-                        return null;
-                      },
+                      prefixIcon: const Icon(Icons.description),
                     ),
-                    const SizedBox(height: 16),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter item description';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Hourly Price Field
-                    TextFormField(
-                      controller: _hourlyPriceController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Hourly Price',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.attach_money),
+                  // Hourly Price Field
+                  TextFormField(
+                    controller: _hourlyPriceController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Hourly Price',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      validator: (value) {
-                        if (value != null &&
-                            value.isNotEmpty &&
-                            double.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
+                      prefixIcon: const Icon(Icons.attach_money),
                     ),
-                    const SizedBox(height: 16),
+                    validator: (value) {
+                      if (value != null &&
+                          value.isNotEmpty &&
+                          double.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Daily Price Field
-                    TextFormField(
-                      controller: _dailyPriceController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Daily Price',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.attach_money),
+                  // Daily Price Field
+                  TextFormField(
+                    controller: _dailyPriceController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Daily Price',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      validator: (value) {
-                        if (value != null &&
-                            value.isNotEmpty &&
-                            double.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
+                      prefixIcon: const Icon(Icons.attach_money),
                     ),
-                    const SizedBox(height: 16),
+                    validator: (value) {
+                      if (value != null &&
+                          value.isNotEmpty &&
+                          double.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Quantity Field
-                    TextFormField(
-                      controller: _quantityController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Quantity',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        prefixIcon: const Icon(Icons.inventory),
+                  // Quantity Field
+                  TextFormField(
+                    controller: _quantityController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Quantity',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter quantity';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
+                      prefixIcon: const Icon(Icons.inventory),
                     ),
-                    const SizedBox(height: 16),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter quantity';
+                      }
+                      if (int.tryParse(value) == null) {
+                        return 'Please enter a valid number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Tags Section
-                    const Text(
-                      'Select Tags',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: _availableTags.map((tag) {
-                        final isSelected = _selectedTags.contains(tag);
-                        return FilterChip(
-                          label: Text(tag),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                _selectedTags.add(tag);
-                              } else {
-                                _selectedTags.remove(tag);
-                              }
-                            });
-                          },
-                          selectedColor: const Color(0xff92A3FD),
-                          checkmarkColor: Colors.white,
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Category Selection
-                    _buildCategorySelection(),
-                    const SizedBox(height: 24),
-
-                    // Media Selection Section
-                    const Text(
-                      'Add Images/Videos',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Display selected media previews
-                    _buildMediaPreview(),
-                    const SizedBox(height: 16),
-
-                    // Media Selection Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () => _showMediaSourceDialog(false),
-                          icon: const Icon(Icons.photo_library),
-                          label: const Text('Add Image'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xff92A3FD),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                  // Tags Section
+                  const Text(
+                    'Select Tags',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: _availableTags.map((tag) {
+                      final isSelected = _selectedTags.contains(tag);
+                      return FilterChip(
+                        label: Text(
+                          tag,
+                          style: TextStyle(
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () => _showMediaSourceDialog(true),
-                          icon: const Icon(Icons.video_library),
-                          label: const Text('Add Video'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xff92A3FD),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _selectedTags.add(tag);
+                            } else {
+                              _selectedTags.remove(tag);
+                            }
+                          });
+                        },
+                        selectedColor: const Color(0xff92A3FD),
+                        checkmarkColor: Colors.white,
+                        labelStyle: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Upload Progress
-                    _buildUploadProgress(),
+                  // Category Selection
+                  _buildCategorySelection(),
+                  const SizedBox(height: 24),
 
-                    // Submit Button with padding at bottom
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 24.0,
-                        bottom: MediaQuery.of(context).padding.bottom +
-                            24.0, // Add extra padding for system navigation
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _submitItem,
+                  // Media Selection Section
+                  const Text(
+                    'Add Images/Videos',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Display selected media previews
+                  _buildMediaPreview(),
+                  const SizedBox(height: 16),
+
+                  // Media Selection Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => _showMediaSourceDialog(false),
+                        icon: const Icon(Icons.photo_library),
+                        label: const Text('Add Image'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xff92A3FD),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
-                            : const Text(
-                                'Add Item',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                       ),
+                      ElevatedButton.icon(
+                        onPressed: () => _showMediaSourceDialog(true),
+                        icon: const Icon(Icons.video_library),
+                        label: const Text('Add Video'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff92A3FD),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Upload Progress
+                  _buildUploadProgress(),
+
+                  // Submit Button with padding at bottom
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: 24.0,
+                      bottom: MediaQuery.of(context).padding.bottom +
+                          24.0, // Add extra padding for system navigation
                     ),
-                  ],
-                ),
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submitItem,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xff92A3FD),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Add Item',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
               ),
-              // Add permanent bottom padding
-              SizedBox(
-                  height: MediaQuery.of(context).padding.bottom +
-                      80), // 80dp for navigation bar + extra padding
-            ],
-          ),
+            ),
+            // Add permanent bottom padding
+            SizedBox(
+                height: MediaQuery.of(context).padding.bottom +
+                    80), // 80dp for navigation bar + extra padding
+          ],
         ),
       ),
     );
@@ -689,7 +698,12 @@ class _AddItemPageState extends State<AddItemPage> {
           children: _availableCategories.map((category) {
             final isSelected = _selectedCategories.contains(category);
             return FilterChip(
-              label: Text(category),
+              label: Text(
+                category,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              ),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
