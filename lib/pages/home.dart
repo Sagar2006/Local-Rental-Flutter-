@@ -266,22 +266,23 @@ class _HomePageState extends State<HomePage> {
                             0xFF2D2D2D) // Lighter dark color for dark mode
                         : filteredItems[index]
                             .boxColor
-                            .withAlpha(50), // Colorful in light mode
+                            .withOpacity(0.8), // Brighter color for light mode
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: theme.brightness == Brightness.dark
                             ? Colors.black26
-                            : Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 5,
+                            : Colors.grey.withOpacity(
+                                0.4), // Subtle shadow for light mode
+                        spreadRadius: 2,
+                        blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),
                     ],
                     border: Border.all(
                       color: theme.brightness == Brightness.dark
                           ? Colors.transparent
-                          : filteredItems[index].boxColor.withOpacity(0.5),
+                          : filteredItems[index].boxColor.withOpacity(0.6),
                       width: 1,
                     ),
                   ),
@@ -512,88 +513,61 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // IconData _getCategoryIcon(String category) {
-  //   switch (category) {
-  //     case 'Electronics':
-  //       return Icons.devices;
-  //     case 'Beauty':
-  //       return Icons.face;
-  //     case 'Cooking':
-  //       return Icons.restaurant;
-  //     case 'Fitness':
-  //       return Icons.fitness_center;
-  //     case 'Travel':
-  //       return Icons.flight;
-  //     default:
-  //       return Icons.category;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: Column(
-        children: [
-          AppBar(
-            title: const Text(
-              'Local Rental',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            centerTitle: true,
-            backgroundColor: theme.brightness == Brightness.dark
-                ? const Color(0xFF1E1E1E)
-                : Colors.white,
-            foregroundColor: theme.textTheme.bodyLarge?.color,
-            elevation: 0,
-            actions: [
-              PopupMenuButton<String>(
-                onSelected: (value) async {
-                  if (value == 'signout') {
-                    try {
-                      await context.read<FitnessAuthProvider>().signOut();
-                      if (!mounted) return;
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AuthWrapper()),
-                        (route) => false,
-                      );
-                    } catch (e) {
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error signing out: $e')),
-                      );
-                    }
-                  }
-                },
-                itemBuilder: (BuildContext context) => [
-                  const PopupMenuItem<String>(
-                    value: 'signout',
-                    child: Text('Sign Out'),
-                  ),
-                ],
+      appBar: AppBar(
+        title: const Text(
+          'Local Rental',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
+        elevation: 0,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'signout') {
+                try {
+                  await context.read<FitnessAuthProvider>().signOut();
+                  if (!mounted) return;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AuthWrapper()),
+                    (route) => false,
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error signing out: $e')),
+                  );
+                }
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'signout',
+                child: Text('Sign Out'),
               ),
             ],
           ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _handleRefresh,
-              color: const Color(0xff92A3FD), // Match app theme color
-              child: ListView(
-                children: [
-                  _searchField(),
-                  const SizedBox(height: 40),
-                  _categoriesSection(),
-                  const SizedBox(height: 40),
-                  _dietSection(),
-                ],
-              ),
-            ),
-          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          _searchField(),
+          const SizedBox(height: 40),
+          _categoriesSection(),
+          const SizedBox(height: 40),
+          _dietSection(),
         ],
       ),
     );
