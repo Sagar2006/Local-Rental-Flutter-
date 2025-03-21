@@ -471,7 +471,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         const SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: theme.cardColor, // Adapt to theme
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -484,11 +484,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                                     if (_days > 0) _days--;
                                   });
                                 },
+                                color:
+                                    theme.textTheme.bodyLarge?.color, // Updated
                               ),
                               Text(
                                 '$_days',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  color: theme
+                                      .textTheme.bodyLarge?.color, // Updated
                                 ),
                               ),
                               IconButton(
@@ -498,6 +502,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                                     _days++;
                                   });
                                 },
+                                color:
+                                    theme.textTheme.bodyLarge?.color, // Updated
                               ),
                             ],
                           ),
@@ -515,7 +521,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                         const SizedBox(height: 8),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: theme.cardColor, // Adapt to theme
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -528,11 +534,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                                     if (_hours > 0) _hours--;
                                   });
                                 },
+                                color:
+                                    theme.textTheme.bodyLarge?.color, // Updated
                               ),
                               Text(
                                 '$_hours',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
+                                  color: theme
+                                      .textTheme.bodyLarge?.color, // Updated
                                 ),
                               ),
                               IconButton(
@@ -542,6 +552,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                                     _hours++;
                                   });
                                 },
+                                color:
+                                    theme.textTheme.bodyLarge?.color, // Updated
                               ),
                             ],
                           ),
