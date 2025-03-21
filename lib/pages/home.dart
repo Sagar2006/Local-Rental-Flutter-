@@ -248,6 +248,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(left: 20, right: 20),
             separatorBuilder: (context, index) => const SizedBox(width: 25),
             itemBuilder: (context, index) {
+              final isSelected = false; // No selection logic for items
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -261,19 +262,19 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: theme.brightness == Brightness.dark
-                        ? const Color(
-                            0xFF2D2D2D) // Lighter dark color for dark mode
-                        : filteredItems[index]
-                            .boxColor
-                            .withOpacity(0.8), // Brighter color for light mode
+                    color: isSelected
+                        ? filteredItems[index].boxColor
+                        : theme.brightness == Brightness.dark
+                            ? const Color(0xFF2D2D2D) // Dark mode color
+                            : filteredItems[index]
+                                .boxColor
+                                .withAlpha(77), // Light mode color
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: theme.brightness == Brightness.dark
                             ? Colors.black26
-                            : Colors.grey.withOpacity(
-                                0.4), // Subtle shadow for light mode
+                            : Colors.grey.withOpacity(0.3), // Subtle shadow
                         spreadRadius: 2,
                         blurRadius: 6,
                         offset: const Offset(0, 3),
@@ -282,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                     border: Border.all(
                       color: theme.brightness == Brightness.dark
                           ? Colors.transparent
-                          : filteredItems[index].boxColor.withOpacity(0.6),
+                          : filteredItems[index].boxColor.withOpacity(0.5),
                       width: 1,
                     ),
                   ),
@@ -353,8 +354,8 @@ class _HomePageState extends State<HomePage> {
                               color: theme.brightness == Brightness.dark
                                   ? Colors
                                       .white // Ensure visibility in dark mode
-                                  : Colors
-                                      .black, // Ensure visibility in light mode
+                                  : filteredItems[index]
+                                      .boxColor, // Vibrant in light mode
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
