@@ -127,11 +127,21 @@ class _MyItemsPageState extends State<MyItemsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Items'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text(
+          'My Items',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
         elevation: 0,
       ),
       body: Stack(

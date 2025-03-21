@@ -283,12 +283,21 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
     final isOwner = widget.item.userId == currentUser?.uid;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Item Details'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text(
+          'Item Details',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
         elevation: 0,
         actions: [
           if (isOwner)
@@ -373,9 +382,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             const SizedBox(height: 32),
             Text(
               widget.item.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 16),
@@ -400,26 +410,29 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Description:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               widget.item.description,
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(
+                  fontSize: 16, color: theme.textTheme.bodyLarge?.color),
             ),
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Tags:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 8),
@@ -438,11 +451,12 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Borrowing Duration:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: theme.textTheme.bodyLarge?.color,
                 ),
               ),
               const SizedBox(height: 16),

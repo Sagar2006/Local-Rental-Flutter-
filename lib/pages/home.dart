@@ -204,6 +204,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final currentUser = FirebaseAuth.instance.currentUser;
+    final theme = Theme.of(context);
 
     // Filter out items added by the current user
     final filteredItems = _items.where((item) {
@@ -215,23 +216,26 @@ class _HomePageState extends State<HomePage> {
 
     if (filteredItems.isEmpty) {
       return Center(
-        child: Text(_selectedCategory != null
-            ? 'No items available in $_selectedCategory category'
-            : 'No items available'),
+        child: Text(
+          _selectedCategory != null
+              ? 'No items available in $_selectedCategory category'
+              : 'No items available',
+          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+        ),
       );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 20),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
           child: Text(
             'Available Items',
             style: TextStyle(
-              color: Colors.black,
+              color: theme.textTheme.bodyLarge?.color,
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -375,12 +379,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _searchField() {
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff1D1617).withAlpha(11),
+            color: theme.brightness == Brightness.dark
+                ? Colors.black.withAlpha(20)
+                : const Color(0xff1D1617).withAlpha(11),
             blurRadius: 40,
             spreadRadius: 0.0,
           )
@@ -391,32 +399,36 @@ class _HomePageState extends State<HomePage> {
         child: TextField(
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: theme.cardColor,
             contentPadding: const EdgeInsets.all(15),
             hintText: 'Search items',
-            prefixIcon: const Icon(Icons.search),
+            hintStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+            prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
               borderSide: BorderSide.none,
             ),
           ),
+          style: TextStyle(color: theme.textTheme.bodyLarge?.color),
         ),
       ),
     );
   }
 
   Widget _categoriesSection() {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 20),
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
           child: Text(
             'Category',
             style: TextStyle(
-              color: Colors.black,
+              color: theme.textTheme.bodyLarge?.color,
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -502,13 +514,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: Column(
         children: [
           AppBar(
-            title: const Text('Local Rental'),
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
+            title: const Text(
+              'Local Rental',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: theme.brightness == Brightness.dark
+                ? const Color(0xFF1E1E1E)
+                : Colors.white,
+            foregroundColor: theme.textTheme.bodyLarge?.color,
             elevation: 0,
             actions: [
               PopupMenuButton<String>(

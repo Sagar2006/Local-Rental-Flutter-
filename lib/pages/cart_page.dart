@@ -64,11 +64,21 @@ class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Cart'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text(
+          'My Cart',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
         elevation: 0,
         actions: [
           IconButton(
@@ -115,13 +125,17 @@ class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
 
   Widget _buildCheckoutSection(
       BuildContext context, CartProvider cartProvider) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withAlpha(50),
+            color: theme.brightness == Brightness.dark
+                ? Colors.black.withOpacity(0.3)
+                : Colors.grey.withAlpha(50),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, -3),
@@ -134,11 +148,12 @@ class _CartPageState extends State<CartPage> with WidgetsBindingObserver {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Amount:',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: theme.textTheme.bodyLarge?.color,
                 ),
               ),
               Text(

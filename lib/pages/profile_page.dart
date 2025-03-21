@@ -10,13 +10,21 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final screenSize = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: theme.brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
+        foregroundColor: theme.textTheme.bodyLarge?.color,
         elevation: 0,
       ),
       body: ListView(
