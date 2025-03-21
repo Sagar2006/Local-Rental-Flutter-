@@ -351,9 +351,10 @@ class _HomePageState extends State<HomePage> {
                             '\$${filteredItems[index].price} ${filteredItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
                             style: TextStyle(
                               color: theme.brightness == Brightness.dark
-                                  ? theme.textTheme.bodyLarge?.color
-                                  : filteredItems[index]
-                                      .boxColor, // More vibrant color in light mode
+                                  ? Colors
+                                      .white // Ensure visibility in dark mode
+                                  : Colors
+                                      .black, // Ensure visibility in light mode
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
