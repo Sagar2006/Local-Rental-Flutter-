@@ -685,6 +685,8 @@ class _AddItemPageState extends State<AddItemPage> {
   }
 
   Widget _buildCategorySelection() {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -701,7 +703,9 @@ class _AddItemPageState extends State<AddItemPage> {
               label: Text(
                 category,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: theme.brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
               selected: isSelected,
