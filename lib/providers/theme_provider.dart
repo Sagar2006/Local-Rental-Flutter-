@@ -16,6 +16,28 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  ThemeData get themeData {
+    return _isDarkMode
+        ? ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: const Color(0xFF1E1E1E), // VS Code dark
+            cardColor: const Color(0xFF2D2D2D), // Slightly lighter dark
+            textTheme: const TextTheme(
+              bodyLarge: TextStyle(color: Colors.white), // Updated
+              bodyMedium: TextStyle(color: Colors.white70), // Updated
+            ),
+          )
+        : ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: Colors.white,
+            cardColor: Colors.white,
+            textTheme: const TextTheme(
+              bodyLarge: TextStyle(color: Colors.black), // Updated
+              bodyMedium: TextStyle(color: Colors.black87), // Updated
+            ),
+          );
+  }
+
   Future<void> _loadThemePreference() async {
     final prefs = await SharedPreferences.getInstance();
     _isDarkMode = prefs.getBool('isDarkMode') ?? false;

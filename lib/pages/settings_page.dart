@@ -8,12 +8,13 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
-        foregroundColor: themeProvider.isDarkMode ? Colors.white : Colors.black,
+        backgroundColor: isDarkMode ? const Color(0xFF1E1E1E) : Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0,
       ),
       body: Padding(
@@ -21,13 +22,21 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'App Settings',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
             ),
             const SizedBox(height: 16),
             ListTile(
-              title: const Text('Dark Mode'),
+              title: Text(
+                'Dark Mode',
+                style:
+                    TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+              ),
               trailing: Switch(
                 value: themeProvider.isDarkMode,
                 onChanged: (value) {

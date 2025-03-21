@@ -53,8 +53,7 @@ class MyApp extends StatelessWidget {
         builder: (context, themeProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme:
-                themeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+            theme: themeProvider.themeData, // Use custom theme
             home: const AuthWrapper(),
             routes: {
               '/home': (context) => const MainNavigation(),

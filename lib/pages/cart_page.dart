@@ -194,6 +194,8 @@ class CartItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () async {
         final databaseRef = FirebaseDatabase.instance.ref();
@@ -219,11 +221,13 @@ class CartItemTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor, // Adapt to theme
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withAlpha(25),
+              color: theme.brightness == Brightness.dark
+                  ? Colors.black54
+                  : Colors.grey.withAlpha(25),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -261,9 +265,10 @@ class CartItemTile extends StatelessWidget {
                 children: [
                   Text(
                     item.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: theme.textTheme.bodyLarge?.color, // Updated
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -302,8 +307,8 @@ class CartItemTile extends StatelessWidget {
                   // Display price
                   Text(
                     '\$${((item.days > 0 ? (item.dailyPrice ?? 0) * item.days : 0) + (item.hours > 0 ? (item.hourlyPrice ?? 0) * item.hours : 0)) * item.quantity}',
-                    style: const TextStyle(
-                      color: Color(0xff92A3FD),
+                    style: TextStyle(
+                      color: theme.textTheme.bodyLarge?.color, // Updated
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
