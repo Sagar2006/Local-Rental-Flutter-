@@ -262,9 +262,28 @@ class _HomePageState extends State<HomePage> {
                   width: 200,
                   decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
-                        ? const Color(0xFF2D2D2D) // Lighter dark color
-                        : const Color(0xFFF5F5F5), // Light color for light mode
+                        ? const Color(
+                            0xFF2D2D2D) // Lighter dark color for dark mode
+                        : filteredItems[index]
+                            .boxColor
+                            .withAlpha(50), // Colorful in light mode
                     borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.black26
+                            : Colors.grey.withOpacity(0.3),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                    border: Border.all(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.transparent
+                          : filteredItems[index].boxColor.withOpacity(0.5),
+                      width: 1,
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -318,26 +337,22 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             filteredItems[index].name,
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               color: theme.textTheme.bodyLarge?.color,
                               fontSize: 16,
                             ),
-                          ),
-                          Text(
-                            filteredItems[index].description,
-                            style: TextStyle(
-                              color: theme.textTheme.bodyMedium?.color,
-                              fontSize: 12,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             '\$${filteredItems[index].price} ${filteredItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
                             style: TextStyle(
-                              color: theme.textTheme.bodyLarge?.color,
+                              color: theme.brightness == Brightness.dark
+                                  ? theme.textTheme.bodyLarge?.color
+                                  : filteredItems[index]
+                                      .boxColor, // More vibrant color in light mode
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),

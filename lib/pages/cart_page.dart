@@ -242,12 +242,19 @@ class CartItemTile extends StatelessWidget {
             BoxShadow(
               color: theme.brightness == Brightness.dark
                   ? Colors.black54
-                  : Colors.grey.withAlpha(25),
-              spreadRadius: 1,
-              blurRadius: 5,
+                  : Colors.grey
+                      .withAlpha(60), // Increased opacity for light mode
+              spreadRadius: theme.brightness == Brightness.dark ? 1 : 2,
+              blurRadius: theme.brightness == Brightness.dark ? 5 : 8,
               offset: const Offset(0, 3),
             ),
           ],
+          border: theme.brightness == Brightness.dark
+              ? null
+              : Border.all(
+                  color: Colors.grey.withOpacity(0.2),
+                  width: 1,
+                ),
         ),
         child: Row(
           children: [
