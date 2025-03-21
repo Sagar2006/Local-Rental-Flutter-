@@ -31,8 +31,8 @@ class _EditItemPageState extends State<EditItemPage> {
   List<String> _tags = [];
   List<String> _mediaUrls = [];
   List<bool> _isVideo = [];
-  List<File> _newMediaFiles = [];
-  List<bool> _newMediaIsVideo = [];
+  final List<File> _newMediaFiles = [];
+  final List<bool> _newMediaIsVideo = [];
 
   @override
   void initState() {

@@ -14,6 +14,8 @@ import 'package:localrental_flutter/services/cart_service.dart';
 // Add these new imports
 import 'package:localrental_flutter/pages/edit_item_page.dart';
 import 'package:localrental_flutter/models/item_display_model.dart';
+import 'package:localrental_flutter/providers/theme_provider.dart';
+import 'package:localrental_flutter/pages/settings_page.dart'; // Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,23 +47,30 @@ class MyApp extends StatelessWidget {
               ? CartProvider(CartService())
               : CartProvider(CartService()),
         ),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(fontFamily: 'Poppins'),
-        home: const AuthWrapper(),
-        routes: {
-          '/home': (context) => const MainNavigation(),
-          '/login': (context) => const LoginPage(),
-          '/signup': (context) => const SignupPage(),
-          '/add_item': (context) => const AddItemPage(),
-          '/cart': (context) => const CartPage(),
-          // Fix the edit item route
-          '/edit_item': (context) {
-            final args =
-                ModalRoute.of(context)!.settings.arguments as ItemDisplayModel;
-            return EditItemPage(item: args);
-          },
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme:
+                themeProvider.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+            home: const AuthWrapper(),
+            routes: {
+              '/home': (context) => const MainNavigation(),
+              '/login': (context) => const LoginPage(),
+              '/signup': (context) => const SignupPage(),
+              '/add_item': (context) => const AddItemPage(),
+              '/cart': (context) => const CartPage(),
+              '/edit_item': (context) {
+                final args = ModalRoute.of(context)!.settings.arguments
+                    as ItemDisplayModel;
+                return EditItemPage(item: args);
+              },
+              '/settings': (context) =>
+                  const SettingsPage(), // Ensure this is recognized
+            },
+          );
         },
       ),
     );

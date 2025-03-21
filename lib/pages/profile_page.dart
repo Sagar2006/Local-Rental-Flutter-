@@ -125,7 +125,7 @@ class ProfilePage extends StatelessWidget {
                   title: 'Settings',
                   subtitle: 'App settings and preferences',
                   onTap: () {
-                    // TODO: Navigate to settings
+                    Navigator.pushNamed(context, '/settings');
                   },
                 ),
 

@@ -303,7 +303,7 @@ class _MyItemsPageState extends State<MyItemsPage> {
                                               label: const Text('Delete'),
                                               style: OutlinedButton.styleFrom(
                                                 foregroundColor: Colors.red,
-                                                side: BorderSide(
+                                                side: const BorderSide(
                                                     color: Colors.red),
                                               ),
                                             ),
