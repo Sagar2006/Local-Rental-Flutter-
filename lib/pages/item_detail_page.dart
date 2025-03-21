@@ -109,7 +109,35 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Widget _buildMediaWidget(String url, bool isVideo) {
     if (isVideo) {
       final controller = _controllers[url];
-      if (controller == null) return const CircularProgressIndicator();
+      if (controller == null) {
+        // Improved video loading placeholder
+        return Container(
+          color: Colors.black.withOpacity(0.1),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(
+                    color: Color(0xff92A3FD),
+                    strokeWidth: 3,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Loading video...",
+                  style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
 
       return AspectRatio(
         aspectRatio: controller.value.aspectRatio,
@@ -138,8 +166,49 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
       return CachedNetworkImage(
         imageUrl: url,
         fit: BoxFit.cover,
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
+        placeholder: (context, url) => Container(
+          color: Colors.grey[100],
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return const LinearGradient(
+                      colors: [Color(0xff92A3FD), Color(0xff9DCEFF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(bounds);
+                  },
+                  child: const Icon(
+                    Icons.image_outlined,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    color: Color(0xff92A3FD),
+                    strokeWidth: 2,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
+          color: Colors.grey[200],
+          child: const Center(
+            child: Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 40,
+            ),
+          ),
+        ),
       );
     }
   }
@@ -236,25 +305,68 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.item.mediaUrls.isNotEmpty)
-              FlutterCarousel(
-                options: CarouselOptions(
-                  height: 300.0,
-                  showIndicator: true,
-                  slideIndicator: const CircularSlideIndicator(),
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _currentMediaIndex = index;
-                      for (final controller in _controllers.values) {
-                        controller.pause();
-                      }
-                    });
-                  },
+              Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-                items: List.generate(
-                  widget.item.mediaUrls.length,
-                  (index) => _buildMediaWidget(
-                    widget.item.mediaUrls[index],
-                    widget.item.isVideo[index],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    children: [
+                      FlutterCarousel(
+                        options: CarouselOptions(
+                          height: 300.0,
+                          showIndicator: false, // Disable default indicators
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentMediaIndex = index;
+                              for (final controller in _controllers.values) {
+                                controller.pause();
+                              }
+                            });
+                          },
+                        ),
+                        items: List.generate(
+                          widget.item.mediaUrls.length,
+                          (index) => _buildMediaWidget(
+                            widget.item.mediaUrls[index],
+                            widget.item.isVideo[index],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        left: 0,
+                        right: 0,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            widget.item.mediaUrls.length,
+                            (index) => AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              width: _currentMediaIndex == index ? 12 : 8,
+                              height: _currentMediaIndex == index ? 12 : 8,
+                              decoration: BoxDecoration(
+                                color: _currentMediaIndex == index
+                                    ? const Color(0xff92A3FD)
+                                    : Colors.grey[300],
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
