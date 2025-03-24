@@ -36,6 +36,7 @@ class CategoryItem {
 
 class _HomePageState extends State<HomePage> {
   final List<ItemDisplayModel> _items = [];
+  final List<ItemDisplayModel> _trendingItems = [];
   bool _isLoading = false;
   String _error = '';
   final List<Color> _alternatingColors = [
@@ -93,6 +94,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _setupItemsListener();
+    _fetchTrendingItems(); // Fetch trending items on initialization
   }
 
   void _setupItemsListener() {
@@ -140,6 +142,40 @@ class _HomePageState extends State<HomePage> {
         _error = 'Database error: $error';
       });
     });
+  }
+
+  void _fetchTrendingItems() async {
+    try {
+      final databaseRef = FirebaseDatabase.instance.ref();
+      final snapshot = await databaseRef.child('items').get();
+
+      if (!snapshot.exists) {
+        setState(() {
+          _trendingItems.clear();
+        });
+        return;
+      }
+
+      final items = <ItemDisplayModel>[];
+      final data = snapshot.value as Map<dynamic, dynamic>;
+
+      // Fetch random or most cart-added items
+      data.forEach((key, value) {
+        final itemData = Map<String, dynamic>.from(value);
+        if (itemData['cartCount'] != null && itemData['cartCount'] > 5) {
+          items.add(ItemDisplayModel.fromJson(itemData));
+        }
+      });
+
+      setState(() {
+        _trendingItems.clear();
+        _trendingItems.addAll(items.take(10)); // Limit to 10 items
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Error loading trending items: $e';
+      });
+    }
   }
 
   @override
@@ -396,6 +432,150 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _trendingSection() {
+    if (_trendingItems.isEmpty) {
+      return const SizedBox(); // Return empty if no trending items
+    }
+
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Text(
+            'Trending Items',
+            style: TextStyle(
+              color: theme.textTheme.bodyLarge?.color,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        SizedBox(
+          height: 240,
+          child: ListView.separated(
+            itemCount: _trendingItems.length,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            separatorBuilder: (context, index) => const SizedBox(width: 25),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ItemDetailPage(item: _trendingItems[index]),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: theme.brightness == Brightness.dark
+                        ? const Color(0xFF2D2D2D)
+                        : _trendingItems[index]
+                            .boxColor
+                            .withAlpha(77), // Match category tiles opacity
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.brightness == Brightness.dark
+                            ? Colors.black26
+                            : Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 8,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withAlpha(20),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: _trendingItems[index]
+                                  .featuredImageUrl
+                                  .isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl:
+                                      _trendingItems[index].featuredImageUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(
+                                    Icons.inventory,
+                                    size: 50,
+                                    color: Colors.black54,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.inventory,
+                                  size: 50,
+                                  color: Colors.black54,
+                                ),
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            _trendingItems[index].name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: theme.textTheme.bodyLarge?.color,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '\$${_trendingItems[index].price} ${_trendingItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
+                            style: TextStyle(
+                              color: theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : _trendingItems[index].boxColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _searchField() {
     final theme = Theme.of(context);
 
@@ -520,7 +700,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Local Reeental',
+          'Local Rental',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -568,6 +748,8 @@ class _HomePageState extends State<HomePage> {
           _categoriesSection(),
           const SizedBox(height: 40),
           _dietSection(),
+          const SizedBox(height: 40),
+          _trendingSection(), // Add trending section here
         ],
       ),
     );
