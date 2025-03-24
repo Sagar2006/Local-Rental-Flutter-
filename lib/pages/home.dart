@@ -153,13 +153,13 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _trendingItems.clear();
         });
+        print('No trending items found.');
         return;
       }
 
       final items = <ItemDisplayModel>[];
       final data = snapshot.value as Map<dynamic, dynamic>;
 
-      // Fetch random or most cart-added items
       data.forEach((key, value) {
         final itemData = Map<String, dynamic>.from(value);
         if (itemData['cartCount'] != null && itemData['cartCount'] > 5) {
@@ -169,12 +169,14 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         _trendingItems.clear();
-        _trendingItems.addAll(items.take(10)); // Limit to 10 items
+        _trendingItems.addAll(items.take(10));
       });
+      print('Trending items fetched: ${_trendingItems.length}');
     } catch (e) {
       setState(() {
         _error = 'Error loading trending items: $e';
       });
+      print('Error: $e');
     }
   }
 
