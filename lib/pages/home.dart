@@ -455,7 +455,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 15),
         SizedBox(
-          height: 240,
+          height: 150, // Adjust height for rectangular tiles
           child: ListView.separated(
             itemCount: _trendingItems.length,
             scrollDirection: Axis.horizontal,
@@ -473,7 +473,7 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 child: Container(
-                  width: 200,
+                  width: 300, // Wider for rectangular tiles
                   decoration: BoxDecoration(
                     color: theme.brightness == Brightness.dark
                         ? const Color(0xFF2D2D2D)
@@ -492,15 +492,18 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Row(
                     children: [
                       Container(
-                        height: 100,
-                        width: 100,
+                        height: 120,
+                        width: 120,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          shape: BoxShape.circle,
+                          shape: BoxShape.rectangle,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
                           border: Border.all(
                             color: Colors.white,
                             width: 8,
@@ -514,7 +517,11 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ],
                         ),
-                        child: ClipOval(
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
                           child: _trendingItems[index]
                                   .featuredImageUrl
                                   .isNotEmpty
@@ -539,31 +546,49 @@ class _HomePageState extends State<HomePage> {
                                 ),
                         ),
                       ),
-                      Column(
-                        children: [
-                          Text(
-                            _trendingItems[index].name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: theme.textTheme.bodyLarge?.color,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _trendingItems[index].name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.textTheme.bodyLarge?.color,
+                                  fontSize: 16,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '\$${_trendingItems[index].price} ${_trendingItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
+                                style: TextStyle(
+                                  color: theme.brightness == Brightness.dark
+                                      ? Colors.white
+                                      : _trendingItems[index].boxColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _trendingItems[index].tags.isNotEmpty
+                                    ? _trendingItems[index].tags.join(', ')
+                                    : 'No tags available',
+                                style: TextStyle(
+                                  color: theme.textTheme.bodyMedium?.color,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '\$${_trendingItems[index].price} ${_trendingItems[index].priceType == 'per_day' ? '/day' : '/hour'}',
-                            style: TextStyle(
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : _trendingItems[index].boxColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
