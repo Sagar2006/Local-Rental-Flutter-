@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.only(left: 20),
           child: Text(
-            'Available Items',
+            'Available Iiiitems',
             style: TextStyle(
               color: theme.textTheme.bodyLarge?.color,
               fontSize: 18,
