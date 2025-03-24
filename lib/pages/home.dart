@@ -267,7 +267,7 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.only(left: 20),
           child: Text(
-            'Available Iiiitems',
+            'Available Items',
             style: TextStyle(
               color: theme.textTheme.bodyLarge?.color,
               fontSize: 18,
@@ -766,16 +766,21 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          _searchField(),
-          const SizedBox(height: 40),
-          _categoriesSection(),
-          const SizedBox(height: 40),
-          _dietSection(),
-          const SizedBox(height: 40),
-          _trendingSection(), // Add trending section here
-        ],
+      body: SingleChildScrollView(
+        // Wrap content in a scrollable view
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            _searchField(),
+            const SizedBox(height: 40),
+            _categoriesSection(),
+            const SizedBox(height: 40),
+            _dietSection(),
+            const SizedBox(height: 40),
+            _trendingSection(), // Ensure this section is included
+          ],
+        ),
       ),
     );
   }
